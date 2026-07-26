@@ -16,7 +16,10 @@ runs/
 *.bin
 *.pkl
 
-# PDF raw directories
+# PDF raw directories & large files
+data/raw/kenya_bulk_notices_2026/
+data/raw/kenyan_public_notices/
+data/raw/pdfs/
 data/kenya_bulk_notices_2026/
 data/kenyan_public_notices/
 notice_data_kenya/
