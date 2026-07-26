@@ -1,0 +1,18 @@
+PSA Trilingual Dataset — cleaned 20260726
+================================================
+Trilingual core (honest)   : 2782
+  gold                     : 2320
+  review (dup-target/enc)  : 462
+Eng–Ekegusii clean         : 4519
+Eng–Swahili clean          : 5733
+TODO swahili leg (MT)      : 1737
+TODO ekegusii leg (human)  : 2951
+Trilingual ceiling         : 7470
+
+Core domain distribution:
+Domain
+Security       822
+Education      734
+Health         471
+Governance     398
+Agriculture    357
