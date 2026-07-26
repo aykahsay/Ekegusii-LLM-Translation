@@ -16,12 +16,30 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     print(f"Loading pretrained tokenizer & model from {model_checkpoint}...")
-    tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, src_lang="eng_Latn", tgt_lang="swh_Latn")
+    tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, src_lang="eng_Latn", tgt_lang="guz_Latn")
     model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
 
-    # Load datasets
-    train_df = pd.read_csv(os.path.join("data", "train_guz.csv"))
-    dev_df = pd.read_csv(os.path.join("data", "dev_guz.csv"))
+    # 1. Load Ekegusii parallel dataset
+    lang_file = os.path.join("data", "languages", "PSA_English_Ekegusii.csv")
+    inter_train = os.path.join("data", "intermediate", "train_guz.csv")
+    inter_dev = os.path.join("data", "intermediate", "dev_guz.csv")
+
+    if os.path.exists(lang_file):
+        print(f"Loading dataset from {lang_file}...")
+        df = pd.read_csv(lang_file, dtype=str).dropna(subset=["English", "Ekegusii"])
+        # 90% train / 10% dev split
+        df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+        split_idx = int(0.9 * len(df))
+        train_df = df.iloc[:split_idx]
+        dev_df = df.iloc[split_idx:]
+    elif os.path.exists(inter_train) and os.path.exists(inter_dev):
+        print(f"Loading fallback datasets from {inter_train} and {inter_dev}...")
+        train_df = pd.read_csv(inter_train, dtype=str)
+        dev_df = pd.read_csv(inter_dev, dtype=str)
+    else:
+        raise FileNotFoundError("No valid Ekegusii dataset found in data/languages/ or data/intermediate/")
+
+    print(f"Train samples: {len(train_df)} | Dev samples: {len(dev_df)}")
 
     train_dataset = Dataset.from_pandas(train_df)
     dev_dataset = Dataset.from_pandas(dev_df)
@@ -30,12 +48,10 @@ def main():
     max_target_length = 128
 
     def preprocess_function(examples):
-        inputs = [ex for ex in examples["English"]]
-        targets = [ex for ex in examples["Ekegusii"]]
+        inputs = [str(ex) for ex in examples["English"]]
+        targets = [str(ex) for ex in examples["Ekegusii"]]
         
         model_inputs = tokenizer(inputs, max_length=max_input_length, truncation=True)
-        
-        # Tokenize targets with target language setting
         labels = tokenizer(text_target=targets, max_length=max_target_length, truncation=True)
         model_inputs["labels"] = labels["input_ids"]
         return model_inputs

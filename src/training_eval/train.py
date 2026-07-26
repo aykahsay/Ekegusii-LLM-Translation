@@ -1,20 +1,20 @@
-import pandas as pd
 import os
-import torch
-from transformers import MarianTokenizer, AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments, Seq2SeqTrainer, DataCollatorForSeq2Seq
+import pandas as pd
 from datasets import Dataset
+from transformers import MarianTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer
 
-def load_data(file_path):
-    df = pd.read_csv(file_path)
+def load_data(filepath):
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"File not found: {filepath}")
+    df = pd.read_csv(filepath, dtype=str)
     return Dataset.from_pandas(df)
 
 def preprocess_function(examples, tokenizer, max_length=128):
-    inputs = examples["English"]
-    targets = examples["Kiswahili"]
+    inputs = [str(ex) for ex in examples["English"]]
+    targets = [str(ex) for ex in examples["Kiswahili"]]
     
     model_inputs = tokenizer(inputs, text_target=targets, max_length=max_length, padding="max_length", truncation=True)
     
-    # Replace padding token id's of the labels by -100 so it's ignored by the loss
     model_inputs["labels"] = [
         [(l if l != tokenizer.pad_token_id else -100) for l in label] for label in model_inputs["labels"]
     ]
@@ -28,10 +28,23 @@ def main():
     tokenizer = MarianTokenizer.from_pretrained(model_checkpoint)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
     
-    # Load dataset splits
-    print("Loading datasets...")
-    train_dataset = load_data("data/train.csv")
-    dev_dataset = load_data("data/dev.csv")
+    lang_file = os.path.join("data", "languages", "PSA_English_Swahili.csv")
+    inter_train = os.path.join("data", "intermediate", "train.csv")
+    inter_dev = os.path.join("data", "intermediate", "dev.csv")
+
+    if os.path.exists(lang_file):
+        print(f"Loading datasets from {lang_file}...")
+        df = pd.read_csv(lang_file, dtype=str).dropna(subset=["English", "Kiswahili"])
+        df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+        split_idx = int(0.9 * len(df))
+        train_dataset = Dataset.from_pandas(df.iloc[:split_idx])
+        dev_dataset = Dataset.from_pandas(df.iloc[split_idx:])
+    elif os.path.exists(inter_train) and os.path.exists(inter_dev):
+        print(f"Loading datasets from {inter_train} and {inter_dev}...")
+        train_dataset = load_data(inter_train)
+        dev_dataset = load_data(inter_dev)
+    else:
+        raise FileNotFoundError("No valid Swahili dataset found in data/languages/ or data/intermediate/")
     
     print("Tokenizing datasets...")
     tokenized_train = train_dataset.map(lambda x: preprocess_function(x, tokenizer), batched=True, remove_columns=train_dataset.column_names)
@@ -39,37 +52,37 @@ def main():
     
     data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
     
-    # Define training arguments
     training_args = Seq2SeqTrainingArguments(
         output_dir=output_dir,
         eval_strategy="epoch",
         learning_rate=2e-5,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
         weight_decay=0.01,
         save_total_limit=2,
-        num_train_epochs=3, # 3 epochs for a simple POC
+        num_train_epochs=3,
         predict_with_generate=True,
-        fp16=torch.cuda.is_available(), # Use mixed precision if GPU is available
-        push_to_hub=False,
+        fp16=False,
+        logging_steps=50,
+        save_strategy="epoch",
+        report_to="none"
     )
     
-    # Initialize the Trainer
     trainer = Seq2SeqTrainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_train,
         eval_dataset=tokenized_dev,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         data_collator=data_collator,
     )
     
-    print("Starting fine-tuning...")
+    print("\nStarting Swahili Opus-MT Fine-Tuning...")
     trainer.train()
     
-    print(f"Saving model to {output_dir}")
+    print(f"Saving fine-tuned model to {output_dir}")
     trainer.save_model(output_dir)
-    print("Fine-tuning complete!")
+    tokenizer.save_pretrained(output_dir)
 
 if __name__ == "__main__":
     main()
