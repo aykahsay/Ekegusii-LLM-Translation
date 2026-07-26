@@ -42,7 +42,7 @@ def load_model():
 def clean_str(val):
     if pd.isna(val) or val is None:
         return ""
-    s = str(val).strip()
+    s = str(val).strip().replace('\xa0', ' ')
     if s.lower() in ["nan", "none", "n/a", "null", "n/a - pending fine-tuned model inference"]:
         return ""
     return s
@@ -63,13 +63,22 @@ def build():
         if not os.path.exists(sdir):
             continue
         for fname in os.listdir(sdir):
-            if not fname.endswith(".csv") or fname.startswith("Master_"):
+            if fname.startswith("Master_"):
                 continue
 
             fpath = os.path.join(sdir, fname)
-            try:
-                df = pd.read_csv(fpath, on_bad_lines="skip", dtype=str)
-            except Exception:
+            df = None
+            if fname.endswith(".csv"):
+                try:
+                    df = pd.read_csv(fpath, on_bad_lines="skip", dtype=str)
+                except Exception:
+                    continue
+            elif fname.endswith(".xlsx"):
+                try:
+                    df = pd.read_excel(fpath, dtype=str)
+                except Exception:
+                    continue
+            else:
                 continue
 
             eng_col = "English" if "English" in df.columns else None
