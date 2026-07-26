@@ -4,11 +4,11 @@ build_master_datasets.py
 Combines ALL raw data files across the project into two clean, standardized master datasets:
 
   1. data/Master_Mixed_Data.csv -- Complete dataset (PSA + Non-PSA)
-  2. data/Master_PSA_Only.csv   -- Confirmed PSAs only (English, Kiswahili, Ekegusii, Domain, Source)
+  2. data/Master_PSA_Only.csv   -- Confirmed PSAs only
 
 Standardized Schemas:
-  Master_Mixed_Data.csv -> [ English, Kiswahili, Ekegusii, Domain, Source, PSA_Probability, Is_PSA ]
-  Master_PSA_Only.csv   -> [ English, Kiswahili, Ekegusii, Domain, Source ]
+  Master_Mixed_Data.csv -> [ English, Kiswahili, Ekegusii, Domain, PSA_Probability, Is_PSA ]
+  Master_PSA_Only.csv   -> [ English, Kiswahili, Ekegusii, Domain ]
 """
 
 import sys, io, os, pickle
@@ -88,12 +88,6 @@ def build():
                 guz = clean_str(row.get(guz_col, "")) if guz_col else ""
                 dom = clean_str(row.get(dom_col, "")) if dom_col else "General"
                 
-                source_val = fname
-                if "Source" in df.columns and clean_str(row["Source"]):
-                    source_val = clean_str(row["Source"])
-                elif "Filename" in df.columns and clean_str(row["Filename"]):
-                    source_val = clean_str(row["Filename"])
-
                 prob = None
                 if prob_col and pd.notna(row.get(prob_col)):
                     try:
@@ -106,7 +100,6 @@ def build():
                     "Kiswahili": swa if swa else "N/A",
                     "Ekegusii": guz if guz else "N/A",
                     "Domain": dom if dom else "General",
-                    "Source": source_val,
                     "PSA_Probability": prob
                 })
 
