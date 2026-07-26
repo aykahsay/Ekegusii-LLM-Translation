@@ -28,6 +28,8 @@ VECTORIZER_PATH = "tfidf_vectorizer.pkl"
 PSA_THRESHOLD = 0.60
 MIN_WORDS = 4
 
+PENDING_TXT = "N/A - Pending Fine-Tuned Model Inference"
+
 def load_model():
     if not os.path.exists(MODEL_PATH) or not os.path.exists(VECTORIZER_PATH):
         raise FileNotFoundError("Model or Vectorizer missing.")
@@ -41,7 +43,9 @@ def clean_str(val):
     if pd.isna(val) or val is None:
         return ""
     s = str(val).strip()
-    return "" if s.lower() in ["nan", "none", "n/a", "null"] else s
+    if s.lower() in ["nan", "none", "n/a", "null", "n/a - pending fine-tuned model inference"]:
+        return ""
+    return s
 
 def build():
     print("=" * 80)
@@ -51,7 +55,9 @@ def build():
     clf, vec = load_model()
 
     search_dirs = [DATA_DIR, RAW_DIR, INTERMEDIATE_DIR]
-    all_rows = []
+    
+    # Store records by normalized English text
+    records = {}
 
     for sdir in search_dirs:
         if not os.path.exists(sdir):
@@ -80,10 +86,13 @@ def build():
                     continue
 
             for _, row in df.iterrows():
-                eng = clean_str(row.get(eng_col, ""))
+                eng_raw = row.get(eng_col, "")
+                eng = clean_str(eng_raw)
                 if len(eng.split()) < MIN_WORDS:
                     continue
 
+                key = eng.lower().strip()
+                
                 swa = clean_str(row.get(swa_col, "")) if swa_col else ""
                 guz = clean_str(row.get(guz_col, "")) if guz_col else ""
                 dom = clean_str(row.get(dom_col, "")) if dom_col else "General"
@@ -95,19 +104,36 @@ def build():
                     except:
                         prob = None
 
-                all_rows.append({
-                    "English": eng,
-                    "Kiswahili": swa if swa else "N/A",
-                    "Ekegusii": guz if guz else "N/A",
-                    "Domain": dom if dom else "General",
-                    "PSA_Probability": prob
-                })
+                if key not in records:
+                    records[key] = {
+                        "English": eng,
+                        "Kiswahili": swa,
+                        "Ekegusii": guz,
+                        "Domain": dom if dom != "General" else "",
+                        "PSA_Probability": prob
+                    }
+                else:
+                    # Update with non-empty translation if previously empty
+                    if not records[key]["Kiswahili"] and swa:
+                        records[key]["Kiswahili"] = swa
+                    if not records[key]["Ekegusii"] and guz:
+                        records[key]["Ekegusii"] = guz
+                    if not records[key]["Domain"] and dom and dom != "General":
+                        records[key]["Domain"] = dom
+                    if records[key]["PSA_Probability"] is None and prob is not None:
+                        records[key]["PSA_Probability"] = prob
 
-    master_df = pd.DataFrame(all_rows)
+    master_list = list(records.values())
+    master_df = pd.DataFrame(master_list)
+    
+    # Fill empty domains with General
+    master_df["Domain"] = master_df["Domain"].replace("", "General")
 
+    # Compute missing probabilities
     missing_prob_mask = master_df["PSA_Probability"].isna()
     if missing_prob_mask.any():
         texts_to_predict = master_df.loc[missing_prob_mask, "English"].tolist()
+        print(f"--> Computing PSA classification for {len(texts_to_predict)} missing items...")
         X = vec.transform(texts_to_predict)
         probs = clf.predict_proba(X)[:, 1]
         master_df.loc[missing_prob_mask, "PSA_Probability"] = np.round(probs, 4)
@@ -115,14 +141,11 @@ def build():
     master_df["PSA_Probability"] = master_df["PSA_Probability"].astype(float).round(4)
     master_df["Is_PSA"] = (master_df["PSA_Probability"] >= PSA_THRESHOLD).astype(int)
 
-    master_df["has_swa"] = (master_df["Kiswahili"] != "N/A").astype(int)
-    master_df["has_guz"] = (master_df["Ekegusii"] != "N/A").astype(int)
-    
-    master_df = master_df.sort_values(
-        by=["has_swa", "has_guz", "PSA_Probability"], ascending=False
-    ).drop_duplicates(subset=["English"], keep="first")
+    # Explicitly standardize pending / empty translations as PENDING_TXT
+    master_df["Kiswahili"] = master_df["Kiswahili"].apply(lambda x: x if x else PENDING_TXT)
+    master_df["Ekegusii"]  = master_df["Ekegusii"].apply(lambda x: x if x else PENDING_TXT)
 
-    master_df.drop(columns=["has_swa", "has_guz"], inplace=True)
+    # Shuffle for reproducibility
     master_df = master_df.sample(frac=1, random_state=42).reset_index(drop=True)
 
     # 1. Save Master_Mixed_Data.csv
@@ -135,7 +158,13 @@ def build():
     psa_path = os.path.join(DATA_DIR, "Master_PSA_Only.csv")
     psa_only_df.to_csv(psa_path, index=False, encoding="utf-8")
 
-    print(f"✔ Updated Master Datasets: Mixed={len(master_df)} rows | PSA_Only={len(psa_only_df)} rows")
+    print(f"\n✔ Master_Mixed_Data.csv : {len(master_df)} rows")
+    print(f"   • Swahili complete  : {(master_df['Kiswahili'] != PENDING_TXT).sum()}")
+    print(f"   • Ekegusii complete : {(master_df['Ekegusii'] != PENDING_TXT).sum()}")
+
+    print(f"\n✔ Master_PSA_Only.csv   : {len(psa_only_df)} rows")
+    print(f"   • Swahili complete  : {(psa_only_df['Kiswahili'] != PENDING_TXT).sum()}")
+    print(f"   • Ekegusii complete : {(psa_only_df['Ekegusii'] != PENDING_TXT).sum()}")
 
 if __name__ == "__main__":
     build()
