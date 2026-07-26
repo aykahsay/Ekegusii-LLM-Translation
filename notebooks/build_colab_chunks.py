@@ -1,10 +1,17 @@
-{
+"""
+build_colab_chunks.py
+---------------------
+Generates notebooks/colab_training.ipynb with self-contained, well-commented,
+step-by-step Python code chunks for easy execution and understanding in Google Colab.
+"""
+
+import json, os
+
+notebook = {
   "cells": [
     {
       "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github"
-      },
+      "metadata": { "id": "view-in-github" },
       "source": [
         "<a href=\"https://colab.research.google.com/github/aykahsay/Multilogual_transaltion_nlp/blob/main/notebooks/colab_training.ipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>\n",
         "# 🇰🇪 Multilingual Public Service Announcement (PSA) Translation Studio\n",
@@ -24,7 +31,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": None,
       "metadata": {},
       "outputs": [],
       "source": [
@@ -53,7 +60,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": None,
       "metadata": {},
       "outputs": [],
       "source": [
@@ -79,7 +86,7 @@
         "print(f\"✅ English - Ekegusii Parallel Pairs: {len(en_guz_df):,}\")\n",
         "print(f\"✅ Complete Trilingual Triplets    : {len(trilingual_df):,}\")\n",
         "\n",
-        "print(\"\\nSample English-Ekegusii Pair:\")\n",
+        "print(\"\\nSample English-Ekegusii Pair:\")
         "print(en_guz_df.head(2).to_dict(orient='records'))"
       ]
     },
@@ -93,7 +100,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": None,
       "metadata": {},
       "outputs": [],
       "source": [
@@ -180,7 +187,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": None,
       "metadata": {},
       "outputs": [],
       "source": [
@@ -260,7 +267,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": None,
       "metadata": {},
       "outputs": [],
       "source": [
@@ -276,7 +283,7 @@
         "references = [[str(ex)] for ex in eval_sample[\"Ekegusii\"]]\n",
         "inputs = [str(ex) for ex in eval_sample[\"English\"]]\n",
         "\n",
-        "predictions = []\n",
+        "predictions = []
         "print(\"Generating Ekegusii translation predictions...\")\n",
         "for text in tqdm(inputs):\n",
         "    input_ids = tokenizer(text, return_tensors=\"pt\").input_ids.to(model.device)\n",
@@ -309,7 +316,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": None,
       "metadata": {},
       "outputs": [],
       "source": [
@@ -352,3 +359,9 @@
   "nbformat": 4,
   "nbformat_minor": 2
 }
+
+os.makedirs("notebooks", exist_ok=True)
+with open("notebooks/colab_training.ipynb", "w", encoding="utf-8") as f:
+    json.dump(notebook, f, indent=2)
+
+print("Generated notebooks/colab_training.ipynb with self-contained python code chunks successfully!")
