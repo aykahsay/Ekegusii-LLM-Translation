@@ -1,4 +1,4 @@
-# 📊 Week 1: Data Collection & Curation Report
+# 📊 Data Collection & Curation Report
 
 **Project Title**: Multilingual Public Service Announcement (PSA) Machine Translation for Kenya  
 **Target Languages**: English $\leftrightarrow$ Kiswahili $\leftrightarrow$ Ekegusii (Gusii)  
