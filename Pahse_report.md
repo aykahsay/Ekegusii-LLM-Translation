@@ -2,7 +2,7 @@
 
 **Project Title**: Multilingual Public Service Announcement (PSA) Machine Translation for Kenya  
 **Target Languages**: English $\leftrightarrow$ Kiswahili $\leftrightarrow$ Ekegusii (Gusii)  
-**Deliverable Goal**: Parallel dataset of $\ge$5,000 sentences across 5 core domains.  
+**Deliverable Goal**: Parallel dataset of 5,000 sentences across 5 core domains.  
 **Achieved Deliverable**: **7,678 Confirmed Parallel PSA Sentences** (8,290 Total Corpus Entries).
 
 ---
