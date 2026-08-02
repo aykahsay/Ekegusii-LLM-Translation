@@ -1,0 +1,35 @@
+# 🚀 NVIDIA A100 GPU Master Training Pipeline: 3 Machine Translation Architectures
+
+This notebook executes end-to-end preprocessing, stratified splitting, fine-tuning, and evaluation for **English ↔ Kiswahili ↔ Ekegusii NMT** across **3 distinct architectural designs** using Meta NLLB-200 / MarianMT with LoRA (`peft`) on an **NVIDIA A100-SXM4-80GB GPU**.
+
+---
+
+### 🏛️ The 3 Experimental Architectures:
+
+1. **Architecture 1: Direct Trilingual Fine-Tuning**
+   - Fine-tunes directly on Trilingual PSA Data (`data_train_tringual/psa.csv`).
+
+2. **Architecture 2: Sequential Transfer Learning**
+   - Fine-tunes on **Bilingual Data** → Transfer to **Trilingual Bible Data** → Transfer to **Trilingual PSA Data**.
+
+3. **Architecture 3: Progressive Curriculum Transfer Learning**
+   - Pre-trains/adapts on **Unilingual Monolingual PSAs** → Transfer to **Bilingual Data** → Transfer to **Trilingual Bible Data** → Transfer to **Trilingual PSA Data**.
+# Step 1: Verify NVIDIA A100 GPU & Environment Setup
+import torch
+import transformers
+import peft
+import datasets
+import evaluate
+
+print("PyTorch Version:", torch.__version__)
+print("CUDA Available:", torch.cuda.is_available())
+if torch.cuda.is_available():
+    print("GPU Device Name:", torch.cuda.get_device_name(0))
+    print("Total Memory:", f"{torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
+else:
+    print("WARNING: Running on CPU. GPU recommended for A100 training.")
+# Step 2: Generate Architecture Data Splits
+import os
+import sys
+
+os.system("python src/data_processing/create_architecture_splits.py")
