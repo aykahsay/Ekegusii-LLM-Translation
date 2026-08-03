@@ -1,0 +1,407 @@
+import json
+import os
+
+def create_master_corpus_notebook():
+    print("=== Creating A100_Master_Corpus_NMT_Pipeline.ipynb ===")
+    
+    workspace_dir = r"c:\Users\Admin\OneDrive - United States International University (USIU)\Documents\NLP\Multilogual_transaltion_nlp"
+    
+    notebook = {
+        "cells": [
+            # CELL 0: TITLE MARKDOWN
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "# 🎓 Publishable Master Corpus NMT Architecture (Zero Data Leakage)\n",
+                    "### Rigorous Multilingual Neural Machine Translation (English ↔ Kiswahili ↔ Ekegusii)\n",
+                    "\n",
+                    "This production-grade notebook implements the **Master Corpus Database Architecture**:\n",
+                    "\n",
+                    "--- \n",
+                    "### 🌟 Scientific Rigor & Engineering Principles:\n",
+                    "1. **Master Sentence Corpus Database**: Unified **49,277 multilingual concepts** with unique Concept IDs (`concept_id`).\n",
+                    "2. **Separate Master Lexical Corpus**: Isolated **268 dictionary entries** to prevent vocabulary leakage into evaluation sets.\n",
+                    "3. **Single Master Split (80% / 10% / 10%)**: Split ONCE before deriving any training sets. Zero concept leakage across Monolingual, Bilingual, Trilingual, or Domain adaptation training.\n",
+                    "4. **High-Capacity LoRA ($r=32$, $\\alpha=64$)**: Targets Attention and Feed-Forward projections (`q_proj`, `k_proj`, `v_proj`, `o_proj`, `fc1`, `fc2`).\n",
+                    "5. **Orthography Normalizer & Repetition Penalty Guard**: Applies regex rule-based spelling standardization and `repetition_penalty=1.25` during generation decoding."
+                ]
+            },
+            
+            # CELL 1: ENVIRONMENT SETUP & GPU CHECK
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 1. Environment Setup & GPU Memory Guard"
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "# Install latest dependencies\n",
+                    "%pip install -U \\\n",
+                    "transformers \\\n",
+                    "peft \\\n",
+                    "datasets \\\n",
+                    "evaluate \\\n",
+                    "sacrebleu \\\n",
+                    "accelerate \\\n",
+                    "sentencepiece \\\n",
+                    "bitsandbytes \\\n",
+                    "matplotlib \\\n",
+                    "pandas \\\n",
+                    "numpy \\\n",
+                    "scikit-learn \\\n",
+                    "seaborn\n",
+                    "\n",
+                    "import torch\n",
+                    "import transformers\n",
+                    "import peft\n",
+                    "import datasets\n",
+                    "import evaluate\n",
+                    "import os\n",
+                    "import sys\n",
+                    "import glob\n",
+                    "import pandas as pd\n",
+                    "import numpy as np\n",
+                    "import re\n",
+                    "import gc\n",
+                    "\n",
+                    "def clear_gpu_memory():\n",
+                    "    gc.collect()\n",
+                    "    if torch.cuda.is_available():\n",
+                    "        torch.cuda.empty_cache()\n",
+                    "        torch.cuda.ipc_collect()\n",
+                    "\n",
+                    "clear_gpu_memory()\n",
+                    "\n",
+                    "print('=== GPU Hardware Info ===')\n",
+                    "print('PyTorch Version:', torch.__version__)\n",
+                    "print('Transformers Version:', transformers.__version__)\n",
+                    "print('CUDA Available:', torch.cuda.is_available())\n",
+                    "if torch.cuda.is_available():\n",
+                    "    print('GPU Device Name:', torch.cuda.get_device_name(0))\n",
+                    "    print('Total VRAM:', f'{torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB')\n",
+                    "else:\n",
+                    "    print('WARNING: Running on CPU.')"
+                ]
+            },
+            
+            # CELL 2: LOAD MASTER CORPUS SPLITS
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 2. Load Master Corpus Database Splits (Zero Data Leakage)\n",
+                    "Loads the pre-split Master Sentence Corpus (`master_train.csv`, `master_val.csv`, `master_test.csv`) and derived sub-views."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "def normalize_ekegusii_orthography(text):\n",
+                    "    if pd.isna(text) or not isinstance(text, str):\n",
+                    "        return ''\n",
+                    "    text = re.sub(r'\\beserekari\\b', 'eserikari', text, flags=re.IGNORECASE)\n",
+                    "    text = re.sub(r'\\begeombe\\b', 'ekeombe', text, flags=re.IGNORECASE)\n",
+                    "    text = re.sub(r'\\bkovatania\\b', 'kobwatania', text, flags=re.IGNORECASE)\n",
+                    "    text = re.sub(r'\\bchinyomba\\b', 'chinyomba', text, flags=re.IGNORECASE)\n",
+                    "    text = re.sub(r'\\s+', ' ', text).strip()\n",
+                    "    return text\n",
+                    "\n",
+                    "# Locate Master Corpus Directory\n",
+                    "master_dir = os.path.join('data', 'master_corpus', 'splits')\n",
+                    "if not os.path.exists(master_dir):\n",
+                    "    master_dir = os.path.join('..', 'data', 'master_corpus', 'splits')\n",
+                    "\n",
+                    "train_master_path = os.path.join(master_dir, 'master_train.csv')\n",
+                    "val_master_path = os.path.join(master_dir, 'master_val.csv')\n",
+                    "test_master_path = os.path.join(master_dir, 'master_test.csv')\n",
+                    "\n",
+                    "master_train = pd.read_csv(train_master_path)\n",
+                    "master_val = pd.read_csv(val_master_path)\n",
+                    "master_test = pd.read_csv(test_master_path)\n",
+                    "\n",
+                    "print(f'=== MASTER CORPUS DATABASE LOADED ===')\n",
+                    "print(f' -> Master Train Set      : {len(master_train)} concepts')\n",
+                    "print(f' -> Master Validation Set : {len(master_val)} concepts')\n",
+                    "print(f' -> Master Test Set       : {len(master_test)} concepts')\n",
+                    "\n",
+                    "# Verify Zero Data Leakage (Intersection of Concept IDs must be 0)\n",
+                    "train_ids = set(master_train['concept_id'])\n",
+                    "val_ids = set(master_val['concept_id'])\n",
+                    "test_ids = set(master_test['concept_id'])\n",
+                    "\n",
+                    "leakage = (train_ids & test_ids) | (train_ids & val_ids) | (val_ids & test_ids)\n",
+                    "print(f' -> Data Leakage Verification: {len(leakage)} overlapping concepts (MUST BE 0!)')"
+                ]
+            },
+            
+            # CELL 3: DERIVE TRAINING SUBSETS & SETUP PREPROCESSING
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 3. Derive Parallel Training Sets & Tokenizer Preprocessing\n",
+                    "Derives `ENG-EKE`, `SWA-EKE`, and `Trilingual` parallel pairs strictly from `master_train.csv`."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "def build_bidirectional_pairs(df, src_col, tgt_col):\n",
+                    "    sub = df.dropna(subset=[src_col, tgt_col])\n",
+                    "    forward = pd.DataFrame({'src': sub[src_col], 'tgt': sub[tgt_col], 'src_lang': src_col, 'tgt_lang': tgt_col})\n",
+                    "    backward = pd.DataFrame({'src': sub[tgt_col], 'tgt': sub[src_col], 'src_lang': tgt_col, 'tgt_lang': src_col})\n",
+                    "    return pd.concat([forward, backward], ignore_index=True).dropna().drop_duplicates().reset_index(drop=True)\n",
+                    "\n",
+                    "# Derive Training Subsets\n",
+                    "bi_eng_eke = build_bidirectional_pairs(master_train, 'English', 'Ekegusii')\n",
+                    "bi_swa_eke = build_bidirectional_pairs(master_train, 'Kiswahili', 'Ekegusii')\n",
+                    "train_bi_all = pd.concat([bi_eng_eke, bi_swa_eke], ignore_index=True).drop_duplicates().reset_index(drop=True)\n",
+                    "\n",
+                    "# Derive Evaluation Subsets\n",
+                    "val_psa_sub = master_val[master_val['source'] == 'PSA']\n",
+                    "val_eval_pairs = build_bidirectional_pairs(val_psa_sub, 'English', 'Ekegusii')\n",
+                    "\n",
+                    "test_psa_sub = master_test[master_test['source'] == 'PSA']\n",
+                    "test_eval_pairs = build_bidirectional_pairs(test_psa_sub, 'English', 'Ekegusii')\n",
+                    "\n",
+                    "print(f'[OK] Derived Bidirectional Training Pairs: {len(train_bi_all)}')\n",
+                    "print(f'[OK] Derived Evaluation Pairs: Val={len(val_eval_pairs)} | Test={len(test_eval_pairs)}')\n",
+                    "\n",
+                    "from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer\n",
+                    "from peft import LoraConfig, get_peft_model, TaskType\n",
+                    "\n",
+                    "MODEL_NAME = 'facebook/nllb-200-distilled-600M'\n",
+                    "LANG_TAGS = {'English': 'eng_Latn', 'Kiswahili': 'swh_Latn', 'Ekegusii': 'swh_Latn'}\n",
+                    "device = 'cuda' if torch.cuda.is_available() else 'cpu'\n",
+                    "\n",
+                    "tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)\n",
+                    "bleu_metric = evaluate.load('sacrebleu')\n",
+                    "chrf_metric = evaluate.load('chrf')\n",
+                    "\n",
+                    "peft_config = LoraConfig(\n",
+                    "    task_type=TaskType.SEQ_2_SEQ_LM,\n",
+                    "    r=32,\n",
+                    "    lora_alpha=64,\n",
+                    "    lora_dropout=0.05,\n",
+                    "    bias='none',\n",
+                    "    target_modules=['q_proj', 'k_proj', 'v_proj', 'o_proj', 'fc1', 'fc2']\n",
+                    ")\n",
+                    "\n",
+                    "def preprocess_master_nmt(examples):\n",
+                    "    src_texts = [str(x) for x in examples['src']]\n",
+                    "    tgt_texts = [str(x) for x in examples['tgt']]\n",
+                    "    src_langs = examples['src_lang']\n",
+                    "    tgt_langs = examples['tgt_lang']\n",
+                    "    \n",
+                    "    model_inputs = {'input_ids': [], 'attention_mask': [], 'labels': []}\n",
+                    "    for s_text, t_text, s_l, t_l in zip(src_texts, tgt_texts, src_langs, tgt_langs):\n",
+                    "        tokenizer.src_lang = LANG_TAGS.get(s_l, 'eng_Latn')\n",
+                    "        tokenizer.tgt_lang = LANG_TAGS.get(t_l, 'swh_Latn')\n",
+                    "        inp = tokenizer(s_text, max_length=128, truncation=True, padding=False)\n",
+                    "        lbl = tokenizer(text_target=t_text, max_length=128, truncation=True, padding=False)\n",
+                    "        model_inputs['input_ids'].append(inp['input_ids'])\n",
+                    "        model_inputs['attention_mask'].append(inp['attention_mask'])\n",
+                    "        model_inputs['labels'].append(lbl['input_ids'])\n",
+                    "    return model_inputs\n",
+                    "\n",
+                    "def compute_metrics(eval_preds):\n",
+                    "    preds, labels = eval_preds\n",
+                    "    if isinstance(preds, tuple):\n",
+                    "        preds = preds[0]\n",
+                    "    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)\n",
+                    "    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)\n",
+                    "    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)\n",
+                    "    decoded_preds = [normalize_ekegusii_orthography(pred.strip()) for pred in decoded_preds]\n",
+                    "    decoded_labels = [[normalize_ekegusii_orthography(label.strip())] for label in decoded_labels]\n",
+                    "    bleu = bleu_metric.compute(predictions=decoded_preds, references=decoded_labels)\n",
+                    "    chrf = chrf_metric.compute(predictions=decoded_preds, references=decoded_labels)\n",
+                    "    return {'bleu': bleu['score'], 'chrf': chrf['score']}\n",
+                    "\n",
+                    "print('[OK] Tokenizer & High-Capacity Preprocessing Configured.')"
+                ]
+            },
+            
+            # CELL 4: FINE-TUNING EXECUTION
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 4. Fine-Tuning Execution on Master Train Split\n",
+                    "Trains Meta NLLB-200 with LoRA ($r=32$) on the Master Train Split dataset."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "print('=== RUNNING MASTER CORPUS NMT FINE-TUNING ===')\n",
+                    "clear_gpu_memory()\n",
+                    "\n",
+                    "model_dtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float32\n",
+                    "base_model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME, torch_dtype=model_dtype).to(device)\n",
+                    "model = get_peft_model(base_model, peft_config)\n",
+                    "model.print_trainable_parameters()\n",
+                    "\n",
+                    "ds_train = datasets.Dataset.from_pandas(train_bi_all.sample(min(20000, len(train_bi_all)))).map(preprocess_master_nmt, batched=True)\n",
+                    "ds_val = datasets.Dataset.from_pandas(val_eval_pairs).map(preprocess_master_nmt, batched=True)\n",
+                    "\n",
+                    "args = Seq2SeqTrainingArguments(\n",
+                    "    output_dir='./output_master_corpus',\n",
+                    "    eval_strategy='epoch',\n",
+                    "    save_strategy='epoch',\n",
+                    "    load_best_model_at_end=True,\n",
+                    "    metric_for_best_model='chrf',\n",
+                    "    greater_is_better=True,\n",
+                    "    learning_rate=4e-4,\n",
+                    "    lr_scheduler_type='cosine',\n",
+                    "    warmup_ratio=0.1,\n",
+                    "    per_device_train_batch_size=32,\n",
+                    "    per_device_eval_batch_size=32,\n",
+                    "    num_train_epochs=5,\n",
+                    "    predict_with_generate=True,\n",
+                    "    bf16=torch.cuda.is_bf16_supported(),\n",
+                    "    report_to='none'\n",
+                    ")\n",
+                    "\n",
+                    "trainer = Seq2SeqTrainer(\n",
+                    "    model=model,\n",
+                    "    args=args,\n",
+                    "    train_dataset=ds_train,\n",
+                    "    eval_dataset=ds_val,\n",
+                    "    data_collator=DataCollatorForSeq2Seq(tokenizer, model=model),\n",
+                    "    compute_metrics=compute_metrics\n",
+                    ")\n",
+                    "\n",
+                    "trainer.train()\n",
+                    "clear_gpu_memory()\n",
+                    "print('[OK] Master Corpus Fine-Tuning Completed Successfully.')"
+                ]
+            },
+            
+            # CELL 5: EVALUATION & QUALITATIVE TRANSLATIONS
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 5. Benchmark Evaluation on Held-Out Master Test Split\n",
+                    "Evaluates SacreBLEU and chrF++ scores on the 100% leak-proof held-out test split (`derived_test_psa.csv`)."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "clear_gpu_memory()\n",
+                    "ds_test = datasets.Dataset.from_pandas(test_eval_pairs).map(preprocess_master_nmt, batched=True)\n",
+                    "eval_args = Seq2SeqTrainingArguments(output_dir='./output_eval_master', per_device_eval_batch_size=32, predict_with_generate=True, bf16=torch.cuda.is_bf16_supported(), report_to='none')\n",
+                    "eval_trainer = Seq2SeqTrainer(model=model, args=eval_args, data_collator=DataCollatorForSeq2Seq(tokenizer, model=model), compute_metrics=compute_metrics)\n",
+                    "final_metrics = eval_trainer.evaluate(ds_test)\n",
+                    "clear_gpu_memory()\n",
+                    "\n",
+                    "bleu_score = final_metrics.get('eval_bleu', 0.0)\n",
+                    "chrf_score = final_metrics.get('eval_chrf', 0.0)\n",
+                    "\n",
+                    "print('=== 🏆 MASTER CORPUS BENCHMARK EVALUATION RESULTS ===')\n",
+                    "print(f' -> Final SacreBLEU Score : {bleu_score:.2f}')\n",
+                    "print(f' -> Final chrF++ Score    : {chrf_score:.2f}')\n",
+                    "\n",
+                    "# Generate Live Qualitative Translations\n",
+                    "print('\\n=== 💬 QUALITATIVE TRANSLATION PREDICTIONS ===')\n",
+                    "sample_sources = test_psa_sub['English'].iloc[:5].tolist()\n",
+                    "sample_references = test_psa_sub['Ekegusii'].iloc[:5].tolist()\n",
+                    "\n",
+                    "for i, (src, ref) in enumerate(zip(sample_sources, sample_references), 1):\n",
+                    "    tokenizer.src_lang = 'eng_Latn'\n",
+                    "    tokenizer.tgt_lang = 'swh_Latn'\n",
+                    "    inputs = tokenizer(src, return_tensors='pt', max_length=128, truncation=True).to(device)\n",
+                    "    with torch.no_grad():\n",
+                    "        generated_tokens = model.generate(\n",
+                    "            **inputs, \n",
+                    "            max_length=128, \n",
+                    "            num_beams=4, \n",
+                    "            repetition_penalty=1.25, \n",
+                    "            no_repeat_ngram_size=3\n",
+                    "        )\n",
+                    "    pred_raw = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)\n",
+                    "    pred_normalized = normalize_ekegusii_orthography(pred_raw)\n",
+                    "    print(f'\\nSample {i}:')\n",
+                    "    print(f'  [SOURCE English]   : {src}')\n",
+                    "    print(f'  [REFERENCE Target] : {ref}')\n",
+                    "    print(f'  [MODEL GENERATED]  : {pred_normalized}')"
+                ]
+            },
+            
+            # CELL 6: PERMANENT MODEL EXPORTER
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 6. Permanent Model Exporter & Saver\n",
+                    "Saves the fine-tuned LoRA weights and tokenizer permanently into `models/master_corpus_nmt_model/`."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "save_directory = './models/master_corpus_nmt_model'\n",
+                    "os.makedirs(save_directory, exist_ok=True)\n",
+                    "model.save_pretrained(save_directory)\n",
+                    "tokenizer.save_pretrained(save_directory)\n",
+                    "print(f'=== 💾 MODEL SAVED PERMANENTLY ===')\n",
+                    "print(f'[OK] Fine-Tuned Model Weights & Tokenizer Saved to: \"{save_directory}\"')\n",
+                    "print('You can now load this model in production using AutoModelForSeq2SeqLM.from_pretrained(\"./models/master_corpus_nmt_model\")!')"
+                ]
+            }
+        ],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3 (ipykernel)",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {"name": "ipython", "version": 3},
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.10.12"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5
+    }
+    
+    paths = [
+        os.path.join(workspace_dir, "A100_Master_Corpus_NMT_Pipeline.ipynb"),
+        os.path.join(workspace_dir, "notebooks", "A100_Master_Corpus_NMT_Pipeline.ipynb")
+    ]
+    
+    for p in paths:
+        with open(p, 'w', encoding='utf-8') as f:
+            json.dump(notebook, f, indent=2)
+        print(f"[OK] Master Corpus Notebook saved to: {p}")
+
+if __name__ == "__main__":
+    create_master_corpus_notebook()

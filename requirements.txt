@@ -1,6 +1,7 @@
 pandas
 beautifulsoup4
 requests
+pypdf
 scikit-learn
 tqdm
 deep-translator
@@ -12,3 +13,4 @@ evaluate
 sacrebleu
 sentencepiece
 sacremoses
+unbabel-comet

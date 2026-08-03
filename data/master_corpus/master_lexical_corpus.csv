@@ -1,0 +1,269 @@
+lexicon_id,English,Kiswahili,Ekegusii,source,dataset_origin
+1,,jambo,amangʼana,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+2,,rafiki,omosani,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+3,,mtu,omonto,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+4,,watu,"abanto, abantu",Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+5,,mume,omosacha,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+6,,mke,omorugi,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+7,,mtoto,omwana,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+8,,baba,tata,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+9,,mzee,omonto omogotu,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+10,,kijana,oboke,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+11,,nyumba,enyomba,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+12,,maji,amache,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+13,,moto,"omorero, gwotirera",Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+14,,mti,omote,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+15,,ardhi,orogongo,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+16,,nchi,"ense yaito, ense enyomo",Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+17,,jua,"komanya, risase",Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+18,,mwezi,omotunyi,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+19,,mvua,embura,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+20,,ugali,obokima,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+21,,nyama,"engiti, enyama",Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+22,,maziwa,"orobere, amabere",Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+23,,ndizi,ritoke,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+24,,dawa,eriogo,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+25,,kichwa,omotwe,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+26,,mkono,okoboko,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+27,,mguu,okogoro,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+28,,jicho,eriso,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+29,,tumbo,ende,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+30,,moyo,enkoro,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+31,,kula,koria,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+32,,kunywa,konywa,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+33,,kutembea,gotara,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+34,,kuja,inchwo,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+35,,kuona,korora,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+36,,kujua,komanya,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+37,,kununua,kogora,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+38,,siku,rituko,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+39,,mwaka,omwaka,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+40,,usiku,botuko,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+41,,moja,eyemo,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+42,,mbili,ibere,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+43,,tatu,isato,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+44,,nne,inye,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+45,,tano,isano,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+46,,sita,isano nemo,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+47,,saba,isano naibere,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+48,,nane,isano na isato,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+49,,tisa,kianda,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+50,,kumi,ikomi,Dictionary,Online_Glosbe_Swahili_Ekegusii_Dictionary.csv
+51,,Habari / Jambo,Omoiyo / Reroke,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+52,,Habari gani?,Bwairire naki? / Habari naki?,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+53,,Asante sana,Mbuya mono,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+54,,Karibu,Nchwo / Keria,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+55,,Kwaheri,Tigana buya / Genda buya,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+56,,Ndiyo,Eee / Yaani,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+57,,Hapana,Yaya / Yaye,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+58,,Tafadhali,Kaasero / Nkaasero,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+59,,Sijui,Tinimanyeti,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+60,,Unatoka wapi?,Ing’o orwaire?,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+61,,Jina lakutwa nani?,Rietwa riao ningo?,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+62,,Mtu,Omonto,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+63,,Watu,Abanto,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+64,,Mwanaume,Omosacha,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+65,,Mwanamke,Omokungu,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+66,,Mtoto,Omwana,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+67,,Watoto,Abana,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+68,,Baba,Tata,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+69,,Mama,Mama / Baba,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+70,,Kaka / Ndugu,Momura omwabo / Omonani,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+71,,Dada,Msubati omwabo / Mosubati,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+72,,Rafiki,Omosani,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+73,,Mwalimu,Omwalimu / Omworokia,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+74,,Mzee,Omugaka,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+75,,Kijana,Omomura,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+76,,Moja,Erimo,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+77,,Mbili,Ebere,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+78,,Tatu,Etato,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+79,,Nne,Ene,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+80,,Tano,Etano,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+81,,Sita,Etano na erimo (6),Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+82,,Saba,Etano na ebere (7),Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+83,,Nane,Enane / Etano na etato,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+84,,Tisini / Tisa,Kianda,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+85,,Kumi,Ikomi,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+86,,Mia moja,Rigana erimo,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+87,,Elfu moja,Ekerosio erimo,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+88,,Leo,Rero,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+89,,Kesho,Ankio,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+90,,Jana,Igoro,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+91,,Asubuhi,Mambia,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+92,,Mchana,Omobaso,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+93,,Jioni,Mogoroba,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+94,,Usiku,Obotuko,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+95,,Mwaka,Omwaka,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+96,,Mwezi,Omotienyi,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+97,,Maji,Amaache,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+98,,Moto,Omorero,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+99,,Mti,Omote,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+100,,Ardhi / Nchi,Ense,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+101,,Jua,Erioba / Omogaso,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+102,,Mvua,Embura,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+103,,Afya,Obochenu / Oboyamu,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+104,,Ugonjwa,Oborwaire,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+105,,Hospitali,Enyagitari / Sibitari,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+106,,Dawa,Omobao / Chindawa,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+107,,Kichwa,Omotwe,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+108,,Mkono,Omoboko,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+109,,Mguu,Ekegoro,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+110,,Jicho,Riso,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+111,,Tumbo,Ekeuno / Inda,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+112,,Moyo,Engoro,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+113,,Kula,Koria,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+114,,Kunywa,Gonywa,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+115,,Kulima,Korema,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+116,,Kusoma,Gosoma,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+117,,Kusema / Kuongea,Goteba / Gokwana,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+118,,Kutembea,Gotaara,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+119,,Kuja,Konchwo,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+120,,Kwenda,Gogenda,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+121,,Kuona,Korora,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+122,,Kujua,Komanya,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+123,,Kufanya,Gokora,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+124,,Kununua,Gogoora,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+125,,Kuuza,Goonia,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+126,,Chakula,Endagera,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+127,,Ugali,Obokima,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+128,,Mboga,Chinyeni,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+129,,Nyama,Enyama,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+130,,Maziwa,Amabere,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+131,,Ndizi,Ematoke,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+132,,Mahindi,Ebibori / Amabori,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+133,,Shamba,Omogunda,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+134,,Mbolea,Esamani,Dictionary,Structured_Swahili_Ekegusii_Dictionary.csv
+135,,Habari / Jambo,Omoiyo / Reroke,Dictionary,Swahili_Ekegusii_Dictionary.csv
+136,,Habari gani?,Bwairire naki? / Habari naki?,Dictionary,Swahili_Ekegusii_Dictionary.csv
+137,,Asante sana,Mbuya mono,Dictionary,Swahili_Ekegusii_Dictionary.csv
+138,,Karibu,Nchwo / Keria,Dictionary,Swahili_Ekegusii_Dictionary.csv
+139,,Kwaheri,Tigana buya / Genda buya,Dictionary,Swahili_Ekegusii_Dictionary.csv
+140,,Ndiyo,Eee / Yaani,Dictionary,Swahili_Ekegusii_Dictionary.csv
+141,,Hapana,Yaya / Yaye,Dictionary,Swahili_Ekegusii_Dictionary.csv
+142,,Tafadhali,Kaasero / Nkaasero,Dictionary,Swahili_Ekegusii_Dictionary.csv
+143,,Sijui,Tinimanyeti,Dictionary,Swahili_Ekegusii_Dictionary.csv
+144,,Unatoka wapi?,Ing’o orwaire?,Dictionary,Swahili_Ekegusii_Dictionary.csv
+145,,Jina lakutwa nani?,Rietwa riao ningo?,Dictionary,Swahili_Ekegusii_Dictionary.csv
+146,,Mtu,Omonto,Dictionary,Swahili_Ekegusii_Dictionary.csv
+147,,Watu,Abanto,Dictionary,Swahili_Ekegusii_Dictionary.csv
+148,,Mwanaume,Omosacha,Dictionary,Swahili_Ekegusii_Dictionary.csv
+149,,Mwanamke,Omokungu,Dictionary,Swahili_Ekegusii_Dictionary.csv
+150,,Mtoto,Omwana,Dictionary,Swahili_Ekegusii_Dictionary.csv
+151,,Watoto,Abana,Dictionary,Swahili_Ekegusii_Dictionary.csv
+152,,Baba,Tata,Dictionary,Swahili_Ekegusii_Dictionary.csv
+153,,Mama,Mama / Baba,Dictionary,Swahili_Ekegusii_Dictionary.csv
+154,,Kaka / Ndugu,Momura omwabo / Omonani,Dictionary,Swahili_Ekegusii_Dictionary.csv
+155,,Dada,Msubati omwabo / Mosubati,Dictionary,Swahili_Ekegusii_Dictionary.csv
+156,,Rafiki,Omosani,Dictionary,Swahili_Ekegusii_Dictionary.csv
+157,,Mwalimu,Omwalimu / Omworokia,Dictionary,Swahili_Ekegusii_Dictionary.csv
+158,,Mzee,Omugaka,Dictionary,Swahili_Ekegusii_Dictionary.csv
+159,,Kijana,Omomura,Dictionary,Swahili_Ekegusii_Dictionary.csv
+160,,Moja,Erimo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+161,,Mbili,Ebere,Dictionary,Swahili_Ekegusii_Dictionary.csv
+162,,Tatu,Etato,Dictionary,Swahili_Ekegusii_Dictionary.csv
+163,,Nne,Ene,Dictionary,Swahili_Ekegusii_Dictionary.csv
+164,,Tano,Etano,Dictionary,Swahili_Ekegusii_Dictionary.csv
+165,,Sita,Etano na erimo (6),Dictionary,Swahili_Ekegusii_Dictionary.csv
+166,,Saba,Etano na ebere (7),Dictionary,Swahili_Ekegusii_Dictionary.csv
+167,,Nane,Enane / Etano na etato,Dictionary,Swahili_Ekegusii_Dictionary.csv
+168,,Tisini / Tisa,Kianda,Dictionary,Swahili_Ekegusii_Dictionary.csv
+169,,Kumi,Ikomi,Dictionary,Swahili_Ekegusii_Dictionary.csv
+170,,Mia moja,Rigana erimo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+171,,Elfu moja,Ekerosio erimo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+172,,Leo,Rero,Dictionary,Swahili_Ekegusii_Dictionary.csv
+173,,Kesho,Ankio,Dictionary,Swahili_Ekegusii_Dictionary.csv
+174,,Jana,Igoro,Dictionary,Swahili_Ekegusii_Dictionary.csv
+175,,Asubuhi,Mambia,Dictionary,Swahili_Ekegusii_Dictionary.csv
+176,,Mchana,Omobaso,Dictionary,Swahili_Ekegusii_Dictionary.csv
+177,,Jioni,Mogoroba,Dictionary,Swahili_Ekegusii_Dictionary.csv
+178,,Usiku,Obotuko,Dictionary,Swahili_Ekegusii_Dictionary.csv
+179,,Mwaka,Omwaka,Dictionary,Swahili_Ekegusii_Dictionary.csv
+180,,Mwezi,Omotienyi,Dictionary,Swahili_Ekegusii_Dictionary.csv
+181,,Maji,Amaache,Dictionary,Swahili_Ekegusii_Dictionary.csv
+182,,Moto,Omorero,Dictionary,Swahili_Ekegusii_Dictionary.csv
+183,,Mti,Omote,Dictionary,Swahili_Ekegusii_Dictionary.csv
+184,,Ardhi / Nchi,Ense,Dictionary,Swahili_Ekegusii_Dictionary.csv
+185,,Jua,Erioba / Omogaso,Dictionary,Swahili_Ekegusii_Dictionary.csv
+186,,Mvua,Embura,Dictionary,Swahili_Ekegusii_Dictionary.csv
+187,,Afya,Obochenu / Oboyamu,Dictionary,Swahili_Ekegusii_Dictionary.csv
+188,,Ugonjwa,Oborwaire,Dictionary,Swahili_Ekegusii_Dictionary.csv
+189,,Hospitali,Enyagitari / Sibitari,Dictionary,Swahili_Ekegusii_Dictionary.csv
+190,,Dawa,Omobao / Chindawa,Dictionary,Swahili_Ekegusii_Dictionary.csv
+191,,Kichwa,Omotwe,Dictionary,Swahili_Ekegusii_Dictionary.csv
+192,,Mkono,Omoboko,Dictionary,Swahili_Ekegusii_Dictionary.csv
+193,,Mguu,Ekegoro,Dictionary,Swahili_Ekegusii_Dictionary.csv
+194,,Jicho,Riso,Dictionary,Swahili_Ekegusii_Dictionary.csv
+195,,Tumbo,Ekeuno / Inda,Dictionary,Swahili_Ekegusii_Dictionary.csv
+196,,Moyo,Engoro,Dictionary,Swahili_Ekegusii_Dictionary.csv
+197,,Kula,Koria,Dictionary,Swahili_Ekegusii_Dictionary.csv
+198,,Kunywa,Gonywa,Dictionary,Swahili_Ekegusii_Dictionary.csv
+199,,Kulima,Korema,Dictionary,Swahili_Ekegusii_Dictionary.csv
+200,,Kusoma,Gosoma,Dictionary,Swahili_Ekegusii_Dictionary.csv
+201,,Kusema / Kuongea,Goteba / Gokwana,Dictionary,Swahili_Ekegusii_Dictionary.csv
+202,,Kutembea,Gotaara,Dictionary,Swahili_Ekegusii_Dictionary.csv
+203,,Kuja,Konchwo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+204,,Kwenda,Gogenda,Dictionary,Swahili_Ekegusii_Dictionary.csv
+205,,Kuona,Korora,Dictionary,Swahili_Ekegusii_Dictionary.csv
+206,,Kujua,Komanya,Dictionary,Swahili_Ekegusii_Dictionary.csv
+207,,Kufanya,Gokora,Dictionary,Swahili_Ekegusii_Dictionary.csv
+208,,Kununua,Gogoora,Dictionary,Swahili_Ekegusii_Dictionary.csv
+209,,Kuuza,Goonia,Dictionary,Swahili_Ekegusii_Dictionary.csv
+210,,Chakula,Endagera,Dictionary,Swahili_Ekegusii_Dictionary.csv
+211,,Ugali,Obokima,Dictionary,Swahili_Ekegusii_Dictionary.csv
+212,,Mboga,Chinyeni,Dictionary,Swahili_Ekegusii_Dictionary.csv
+213,,Nyama,Enyama,Dictionary,Swahili_Ekegusii_Dictionary.csv
+214,,Maziwa,Amabere,Dictionary,Swahili_Ekegusii_Dictionary.csv
+215,,Ndizi,Ematoke,Dictionary,Swahili_Ekegusii_Dictionary.csv
+216,,Mahindi,Ebibori / Amabori,Dictionary,Swahili_Ekegusii_Dictionary.csv
+217,,Shamba,Omogunda,Dictionary,Swahili_Ekegusii_Dictionary.csv
+218,,Mbolea,Esamani,Dictionary,Swahili_Ekegusii_Dictionary.csv
+219,,jambo,amangʼana,Dictionary,Swahili_Ekegusii_Dictionary.csv
+220,,rafiki,omosani,Dictionary,Swahili_Ekegusii_Dictionary.csv
+221,,mtu,omonto,Dictionary,Swahili_Ekegusii_Dictionary.csv
+222,,watu,"abanto, abantu",Dictionary,Swahili_Ekegusii_Dictionary.csv
+223,,mume,omosacha,Dictionary,Swahili_Ekegusii_Dictionary.csv
+224,,mke,omorugi,Dictionary,Swahili_Ekegusii_Dictionary.csv
+225,,mtoto,omwana,Dictionary,Swahili_Ekegusii_Dictionary.csv
+226,,baba,tata,Dictionary,Swahili_Ekegusii_Dictionary.csv
+227,,mzee,omonto omogotu,Dictionary,Swahili_Ekegusii_Dictionary.csv
+228,,kijana,oboke,Dictionary,Swahili_Ekegusii_Dictionary.csv
+229,,nyumba,enyomba,Dictionary,Swahili_Ekegusii_Dictionary.csv
+230,,maji,amache,Dictionary,Swahili_Ekegusii_Dictionary.csv
+231,,moto,"omorero, gwotirera",Dictionary,Swahili_Ekegusii_Dictionary.csv
+232,,mti,omote,Dictionary,Swahili_Ekegusii_Dictionary.csv
+233,,ardhi,orogongo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+234,,nchi,"ense yaito, ense enyomo",Dictionary,Swahili_Ekegusii_Dictionary.csv
+235,,jua,"komanya, risase",Dictionary,Swahili_Ekegusii_Dictionary.csv
+236,,mwezi,omotunyi,Dictionary,Swahili_Ekegusii_Dictionary.csv
+237,,mvua,embura,Dictionary,Swahili_Ekegusii_Dictionary.csv
+238,,ugali,obokima,Dictionary,Swahili_Ekegusii_Dictionary.csv
+239,,nyama,"engiti, enyama",Dictionary,Swahili_Ekegusii_Dictionary.csv
+240,,maziwa,"orobere, amabere",Dictionary,Swahili_Ekegusii_Dictionary.csv
+241,,ndizi,ritoke,Dictionary,Swahili_Ekegusii_Dictionary.csv
+242,,dawa,eriogo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+243,,kichwa,omotwe,Dictionary,Swahili_Ekegusii_Dictionary.csv
+244,,mkono,okoboko,Dictionary,Swahili_Ekegusii_Dictionary.csv
+245,,mguu,okogoro,Dictionary,Swahili_Ekegusii_Dictionary.csv
+246,,jicho,eriso,Dictionary,Swahili_Ekegusii_Dictionary.csv
+247,,tumbo,ende,Dictionary,Swahili_Ekegusii_Dictionary.csv
+248,,moyo,enkoro,Dictionary,Swahili_Ekegusii_Dictionary.csv
+249,,kula,koria,Dictionary,Swahili_Ekegusii_Dictionary.csv
+250,,kunywa,konywa,Dictionary,Swahili_Ekegusii_Dictionary.csv
+251,,kutembea,gotara,Dictionary,Swahili_Ekegusii_Dictionary.csv
+252,,kuja,inchwo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+253,,kuona,korora,Dictionary,Swahili_Ekegusii_Dictionary.csv
+254,,kujua,komanya,Dictionary,Swahili_Ekegusii_Dictionary.csv
+255,,kununua,kogora,Dictionary,Swahili_Ekegusii_Dictionary.csv
+256,,siku,rituko,Dictionary,Swahili_Ekegusii_Dictionary.csv
+257,,mwaka,omwaka,Dictionary,Swahili_Ekegusii_Dictionary.csv
+258,,usiku,botuko,Dictionary,Swahili_Ekegusii_Dictionary.csv
+259,,moja,eyemo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+260,,mbili,ibere,Dictionary,Swahili_Ekegusii_Dictionary.csv
+261,,tatu,isato,Dictionary,Swahili_Ekegusii_Dictionary.csv
+262,,nne,inye,Dictionary,Swahili_Ekegusii_Dictionary.csv
+263,,tano,isano,Dictionary,Swahili_Ekegusii_Dictionary.csv
+264,,sita,isano nemo,Dictionary,Swahili_Ekegusii_Dictionary.csv
+265,,saba,isano naibere,Dictionary,Swahili_Ekegusii_Dictionary.csv
+266,,nane,isano na isato,Dictionary,Swahili_Ekegusii_Dictionary.csv
+267,,tisa,kianda,Dictionary,Swahili_Ekegusii_Dictionary.csv
+268,,kumi,ikomi,Dictionary,Swahili_Ekegusii_Dictionary.csv
