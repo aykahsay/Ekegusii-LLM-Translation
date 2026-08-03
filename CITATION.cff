@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software or master corpus in your research, please cite it as below."
+authors:
+  - family-names: "Aykahsay"
+    given-names: "Research Team"
+title: "Resource-Aware Adaptation of Multilingual Large Language Models for Low-Resource Machine Translation: A Case Study on Ekegusii"
+version: 1.0.0
+date-released: 2026-08-03
+repository-code: "https://github.com/aykahsay/transaltion_model"
