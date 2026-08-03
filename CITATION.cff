@@ -1,9 +1,21 @@
 cff-version: 1.2.0
-message: "If you use this software or master corpus in your research, please cite it as below."
+message: "If you use this software, master corpus, or resource attribution methodology in your research, please cite it as below."
 authors:
   - family-names: "Aykahsay"
     given-names: "Research Team"
+    affiliation: "United States International University - Africa"
 title: "Resource-Aware Adaptation of Multilingual Large Language Models for Low-Resource Machine Translation: A Case Study on Ekegusii"
 version: 1.0.0
+doi: 10.5281/zenodo.1082026
 date-released: 2026-08-03
-repository-code: "https://github.com/aykahsay/transaltion_model"
+url: "https://github.com/aykahsay/Ekegusii-LLM-Translation"
+repository-code: "https://github.com/aykahsay/Ekegusii-LLM-Translation.git"
+keywords:
+  - Machine Translation
+  - Low-Resource Languages
+  - Ekegusii
+  - Kiswahili
+  - Large Language Models
+  - QLoRA
+  - Resource Contribution Analysis
+license: MIT

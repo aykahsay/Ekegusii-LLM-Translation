@@ -1,2 +1,10 @@
-learning_rate: 0.0002
-optimizer: paged_adamw_8bit
+# Optimizer Configuration
+
+optimizer:
+  name: "paged_adamw_8bit"
+  learning_rate: 0.0002
+  weight_decay: 0.01
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  adam_epsilon: 1.0e-8
+  max_grad_norm: 1.0

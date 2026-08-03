@@ -1,68 +1,71 @@
 """
-Lexical Benchmark Evaluator for Low-Resource NMT
---------------------------------------------------
-Evaluates model translation performance on rare-word and domain-specific terminology 
-derived from the Master Lexical Corpus.
-
-Metrics computed:
-1. Lexical Term Accuracy (%) - Exact dictionary term match in generated output.
-2. Synonymous / Morphological Coverage (%) - Stemmed / sub-word match.
+Lexical Terminology & Dictionary Evaluator
+------------------------------------------
+Evaluates translation model precision on specialized domain terminology and rare words
+using exact string matching and morphological stem prefix coverage against the Master Lexical Corpus.
 """
 
-import os
-import re
+import logging
+from typing import Dict, List, Optional, Tuple
 import pandas as pd
-import numpy as np
 
-def normalize_text(text):
-    if pd.isna(text) or not isinstance(text, str):
-        return ""
-    text = text.lower().strip()
-    text = re.sub(r'[^\w\s]', '', text)
-    return text
+from src.master_corpus.manager import MasterCorpusManager
 
-def evaluate_lexical_precision(predictions, references):
-    """
-    Args:
-        predictions (list of str): Model output translations.
-        references (list of str): Target dictionary term references (Ekegusii/English).
-    
-    Returns:
-        dict: Lexical precision metrics.
-    """
-    exact_matches = 0
-    partial_matches = 0
-    total = len(references)
-    
-    for pred, ref in zip(predictions, references):
-        pred_clean = normalize_text(pred)
-        ref_clean = normalize_text(ref)
-        
-        if not ref_clean:
-            continue
-            
-        # Check if reference term is in output
-        if ref_clean in pred_clean:
-            exact_matches += 1
-            partial_matches += 1
-        else:
-            # Check for sub-word stem match (morphological prefix/suffix)
-            ref_words = ref_clean.split()
-            if any(w[:4] in pred_clean for w in ref_words if len(w) >= 4):
-                partial_matches += 1
-                
-    exact_acc = (exact_matches / total * 100.0) if total > 0 else 0.0
-    partial_acc = (partial_matches / total * 100.0) if total > 0 else 0.0
-    
-    return {
-        'total_terms': total,
-        'exact_lexical_accuracy': round(exact_acc, 2),
-        'morphological_lexical_accuracy': round(partial_acc, 2)
-    }
+logger = logging.getLogger(__name__)
 
-if __name__ == "__main__":
-    # Test evaluation with sample data
-    preds = ["eserekari ekobwatania ebiama", "kebe nomoroberio bwomorero esukuru"]
-    refs = ["eserikari", "omorero"]
-    results = evaluate_lexical_precision(preds, refs)
-    print("Lexical Evaluator Test Results:", results)
+
+class LexicalEvaluator:
+    """Evaluates terminology precision and morphological stem match coverage."""
+
+    def __init__(self, manager: Optional[MasterCorpusManager] = None) -> None:
+        """Initialize with MasterCorpusManager instance."""
+        self.manager = manager or MasterCorpusManager()
+        try:
+            self.lexical_df = self.manager.load_lexical_corpus()
+        except Exception as e:
+            logger.warning(f"Could not load lexical corpus automatically: {e}")
+            self.lexical_df = pd.DataFrame()
+
+    def evaluate_predictions(
+        self, predictions: List[Tuple[str, str]]
+    ) -> Dict[str, float]:
+        """Evaluate translation hypothesis predictions against reference dictionary pairs.
+
+        Args:
+            predictions: List of tuples (hypothesis_translation, reference_translation).
+
+        Returns:
+            Dict containing exact_term_accuracy and morphological_coverage scores.
+        """
+        if not predictions:
+            return {"exact_term_accuracy": 0.0, "morphological_coverage": 0.0, "total_eval": 0}
+
+        exact_matches = 0
+        stem_matches = 0
+        total = len(predictions)
+
+        for hypo, ref in predictions:
+            hypo_clean = hypo.strip().lower()
+            ref_clean = ref.strip().lower()
+
+            # 1. Exact Term Match
+            if hypo_clean == ref_clean:
+                exact_matches += 1
+                stem_matches += 1
+            else:
+                # 2. Morphological Stem Match (First 4 characters prefix overlap for Bantu stems)
+                stem_ref = ref_clean[:4] if len(ref_clean) >= 4 else ref_clean
+                if stem_ref in hypo_clean:
+                    stem_matches += 1
+
+        exact_acc = (exact_matches / total) * 100.0
+        stem_cov = (stem_matches / total) * 100.0
+
+        result = {
+            "exact_term_accuracy": float(exact_acc),
+            "morphological_coverage": float(stem_cov),
+            "total_terms_evaluated": total,
+        }
+
+        logger.info(f"Lexical Accuracy: Exact={exact_acc:.2f}%, Stem={stem_cov:.2f}%")
+        return result

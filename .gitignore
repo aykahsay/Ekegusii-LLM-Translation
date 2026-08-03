@@ -1,24 +1,71 @@
-# Virtual environments and IDE settings
+# Python Byte-code and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
 .venv/
 venv/
 ENV/
 env/
-.streamlit/
+.conda/
 
-# Large Model Weights and Checkpoints
+# IDE and Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook Cache & Checkpoints
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Pytest and Coverage Reports
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+.tox/
+
+# Hydra and Wandb Logs
+outputs/*/
+multirun/*/
+wandb/
+.hydra/
+
+# Large Model Weights, LoRA Adapters & Checkpoints (>50MB)
+checkpoints/
+models/
 *.bin
 *.pt
 *.pth
 *.safetensors
-models/
-output*/
-runs/
-checkpoint*/
+*.onnx
 
-# Large Generated Datasets (>50MB)
+# Large Generated Instruction Datasets (Ignored for GitHub 100MB limit)
 data/instruction_datasets/
+data/cache/
+data/processed/
+data/augmented/
 
-# Python Cache
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
+# OS specific
+Thumbs.db

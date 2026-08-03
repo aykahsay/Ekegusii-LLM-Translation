@@ -1,68 +1,78 @@
 """
-Module 4: Resource Attribution Analyzer
------------------------------------------
-Computes and analyzes translation quality contributions across Experiments E0 through E6.
-Measures the exact impact of Monolingual, Bilingual, Trilingual, and Lexical Resources 
-on low-resource NMT with LLMs (Aya 23 / Llama 3.1 / NLLB).
-
-Output:
-- Comprehensive Resource Attribution Matrix (CSV & Markdown)
-- Hypothesis Verification Table (H1, H2, H3, H4)
+Resource Attribution & Ablation Matrix Analyzer
+-----------------------------------------------
+Aggregates performance metrics (SacreBLEU, chrF++, Lexical Term Accuracy) across
+Experiments E0 to E8 to evaluate research hypotheses H1, H2, H3, and H4.
 """
 
-import os
+import logging
+from typing import Dict, List, Optional
 import pandas as pd
-import numpy as np
 
-WORKSPACE_DIR = r"c:\Users\Admin\OneDrive - United States International University (USIU)\Documents\NLP\Multilogual_transaltion_nlp"
-OUTPUT_DIR = os.path.join(WORKSPACE_DIR, "data", "experiment_results")
+from src.evaluation.chrf import ChrFEvaluator
+from src.evaluation.lexical_evaluator import LexicalEvaluator
+from src.evaluation.sacrebleu import SacreBLEUEvaluator
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+logger = logging.getLogger(__name__)
 
-def generate_resource_attribution_report(exp_results=None):
-    print("=== Module 4: Resource Attribution Analysis ===")
-    
-    if exp_results is None:
-        # Default verified baseline benchmarks
-        exp_results = [
-            {'Experiment': 'E0: Base Zero-Shot', 'Training Data': 'None (Base Model)', 'Target Resource': 'Baseline', 'SacreBLEU': 0.29, 'chrF++': 12.18, 'Lexical Acc (%)': 15.0},
-            {'Experiment': 'E1: ENG-EKE Only', 'Training Data': 'Bilingual ENG-EKE', 'Target Resource': 'Direct Parallel', 'SacreBLEU': 1.42, 'chrF++': 14.67, 'Lexical Acc (%)': 42.0},
-            {'Experiment': 'E2: SWA-EKE Only', 'Training Data': 'Bilingual SWA-EKE', 'Target Resource': 'Bantu Transfer', 'SacreBLEU': 3.85, 'chrF++': 22.10, 'Lexical Acc (%)': 58.0},
-            {'Experiment': 'E3: Combined Bilingual', 'Training Data': 'ENG-EKE + SWA-EKE', 'Target Resource': 'Dual Bilingual', 'SacreBLEU': 5.20, 'chrF++': 28.40, 'Lexical Acc (%)': 68.0},
-            {'Experiment': 'E4: Trilingual Supervision', 'Training Data': 'ENG-SWA-EKE Multi-Task', 'Target Resource': 'Trilingual (H2)', 'SacreBLEU': 6.81, 'chrF++': 33.22, 'Lexical Acc (%)': 76.5},
-            {'Experiment': 'E5: Full Sentence System', 'Training Data': 'All Sentence Data', 'Target Resource': 'Sentence Data (H1)', 'SacreBLEU': 7.15, 'chrF++': 34.80, 'Lexical Acc (%)': 78.0},
-            {'Experiment': 'E6: Full + Dictionary', 'Training Data': 'All Sentences + Dictionary', 'Target Resource': 'Lexical Augmentation (H3)', 'SacreBLEU': 7.40, 'chrF++': 36.10, 'Lexical Acc (%)': 91.0}
-        ]
-        
-    df = pd.DataFrame(exp_results)
-    
-    # Calculate Marginal Gains vs Baseline E0
-    base_bleu = df.loc[0, 'SacreBLEU']
-    base_chrf = df.loc[0, 'chrF++']
-    base_lex = df.loc[0, 'Lexical Acc (%)']
-    
-    df['BLEU Gain (Δ)'] = df['SacreBLEU'].apply(lambda x: f"+{round(x - base_bleu, 2)}")
-    df['chrF Gain (Δ)'] = df['chrF++'].apply(lambda x: f"+{round(x - base_chrf, 2)}")
-    df['Lexical Gain (Δ)'] = df['Lexical Acc (%)'].apply(lambda x: f"+{round(x - base_lex, 2)}%")
-    
-    csv_path = os.path.join(OUTPUT_DIR, "resource_attribution_matrix.csv")
-    md_path = os.path.join(OUTPUT_DIR, "resource_attribution_report.md")
-    
-    df.to_csv(csv_path, index=False)
-    
-    with open(md_path, 'w', encoding='utf-8') as f:
-        f.write("# 📊 Resource Attribution Analysis Report\n\n")
-        f.write("## Systematic Contribution Matrix (E0 to E6)\n\n")
-        f.write(df.to_markdown(index=False))
-        f.write("\n\n## Key Research Hypotheses Summary\n")
-        f.write("- **H1 (Monolingual Fluency)**: Supported (+0.34 BLEU gain).\n")
-        f.write("- **H2 (Trilingual Supervision)**: Strongly Supported (+1.61 BLEU gain over combined bilingual).\n")
-        f.write("- **H3 (Lexical Precision)**: Strongly Supported (+13.0% Lexical Term Accuracy increase).\n")
 
-    print(f" [OK] Attribution Matrix Saved to: '{csv_path}'")
-    print(f" [OK] Report Saved to: '{md_path}'")
-    
-    return df
+class ResourceAttributionAnalyzer:
+    """Aggregates metrics and generates publication-ready attribution report matrix."""
+
+    EXPERIMENTS = [
+        ("E0", "Base Model Baseline", False, False, False, False, False),
+        ("E1", "Direct Bilingual (ENG-EKE)", True, False, False, False, False),
+        ("E2", "Swahili Transfer (SWA-EKE)", False, True, False, False, False),
+        ("E3", "Combined Dual Bilingual", True, True, False, False, False),
+        ("E4", "Trilingual Supervision (H2)", True, True, True, True, False),
+        ("E5", "Full Sentence Corpus (H1)", True, True, True, True, False),
+        ("E6", "Lexical Augmentation (H3)", True, True, True, True, True),
+        ("E7", "Curriculum Learning", True, True, True, True, True),
+        ("E8", "Final Ensemble Model", True, True, True, True, True),
+    ]
+
+    def __init__(self) -> None:
+        """Initialize evaluation engines."""
+        self.bleu_eval = SacreBLEUEvaluator()
+        self.chrf_eval = ChrFEvaluator()
+        self.lex_eval = LexicalEvaluator()
+
+    def generate_full_attribution_report(
+        self, experiment_results: Optional[Dict[str, Dict[str, float]]] = None
+    ) -> pd.DataFrame:
+        """Generate attribution matrix DataFrame combining metrics across all experiments.
+
+        Args:
+            experiment_results: Optional dict of precomputed metrics per experiment.
+
+        Returns:
+            pd.DataFrame: Resource attribution matrix.
+        """
+        records: List[Dict[str, str]] = []
+
+        for exp_id, name, eng_eke, swa_eke, eng_swa, tri, lex in self.EXPERIMENTS:
+            res = (experiment_results or {}).get(exp_id, {})
+            records.append(
+                {
+                    "Experiment": exp_id,
+                    "Description": name,
+                    "ENG-EKE": "✓" if eng_eke else "✗",
+                    "SWA-EKE": "✓" if swa_eke else "✗",
+                    "Trilingual": "✓" if tri else "✗",
+                    "Lexical": "✓" if lex else "✗",
+                    "SacreBLEU": f"{res.get('sacrebleu', 0.0):.2f}",
+                    "chrF++": f"{res.get('chrf_pp', 0.0):.2f}",
+                    "Lexical Acc (%)": f"{res.get('lexical_acc', 0.0):.2f}",
+                }
+            )
+
+        report_df = pd.DataFrame(records)
+        logger.info("Generated full resource attribution report matrix.")
+        return report_df
+
 
 if __name__ == "__main__":
-    generate_resource_attribution_report()
+    logging.basicConfig(level=logging.INFO)
+    analyzer = ResourceAttributionAnalyzer()
+    df = analyzer.generate_full_attribution_report()
+    print(df.to_string(index=False))
