@@ -1,3 +1,6 @@
+# Local AI assistant tools config
+.claude/
+
 # Python Byte-code and Cache
 __pycache__/
 *.py[cod]

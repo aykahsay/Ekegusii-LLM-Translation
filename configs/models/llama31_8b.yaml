@@ -1,0 +1,36 @@
+# Meta Llama 3.1 8B Instruct Model Specification Configuration
+
+model:
+  name: "llama31_8b"
+  hf_path: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+  architecture: "LlamaForCausalLM"
+  params: "8B"
+  torch_dtype: "bfloat16"
+  use_fast_tokenizer: true
+  trust_remote_code: false
+
+generation:
+  max_new_tokens: 256
+  min_new_tokens: 1
+  do_sample: false
+  num_beams: 4
+  length_penalty: 1.0
+  repetition_penalty: 1.25
+  no_repeat_ngram_size: 3
+  early_stopping: true
+
+tokenizer:
+  padding_side: "left"
+  truncation_side: "left"
+  max_length: 512
+  pad_token_id: null
+  eos_token_id: null
+
+target_modules:
+  - "q_proj"
+  - "k_proj"
+  - "v_proj"
+  - "o_proj"
+  - "gate_proj"
+  - "up_proj"
+  - "down_proj"

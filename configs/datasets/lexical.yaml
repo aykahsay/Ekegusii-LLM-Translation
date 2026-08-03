@@ -17,6 +17,9 @@ columns:
 expected_rows: 268
 
 notes: >-
-  Some entries have an empty English column (dictionary gloss recorded only
-  in Kiswahili/Ekegusii) -- consumers must handle missing English values
-  rather than assuming full trilingual coverage on every row.
+  As of this writing, ALL 268 rows have an empty English column (verified:
+  0/268 non-null) -- the lexical corpus is currently Kiswahili<->Ekegusii
+  only, despite the schema having an English column. Consumers must not
+  assume any English-language lexical tasks can be generated until this is
+  populated; LexicalTaskGenerator (src/task_generation/lexical_tasks.py)
+  will silently produce zero ENG-direction tasks under the current data.

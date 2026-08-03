@@ -1,0 +1,18 @@
+# Common Shared Model Infrastructure Settings
+
+hardware:
+  device_map: "auto"
+  low_cpu_mem_usage: true
+  use_flash_attention_2: false # Set true if flash-attn installed
+
+seed:
+  global_seed: 42
+  deterministic: true
+
+caching:
+  model_cache_dir: "data/cache/models"
+  dataset_cache_dir: "data/cache/datasets"
+
+environment:
+  disable_huggingface_telemetry: true
+  transformers_verbosity: "warning"

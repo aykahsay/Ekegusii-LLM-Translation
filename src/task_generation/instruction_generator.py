@@ -15,25 +15,44 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from src.master_corpus.manager import MasterCorpusManager
+from src.utils.config import load_prompt_templates
 
 logger = logging.getLogger(__name__)
+
+# Maps each task_type to (config key in configs/prompts/templates.yaml's
+# `translation` section, target language name). Templates are loaded from
+# config rather than hardcoded here so a single source of truth
+# (configs/prompts/templates.yaml) governs prompt wording for both this
+# generator and any inference-time prompt construction.
+_TASK_CONFIG_KEYS = {
+    "ENG_to_EKE": ("eng_to_eke", "Ekegusii"),
+    "EKE_to_ENG": ("eke_to_eng", "English"),
+    "SWA_to_EKE": ("swa_to_eke", "Ekegusii"),
+    "EKE_to_SWA": ("eke_to_swa", "Kiswahili"),
+    "ENG_to_SWA": ("eng_to_swa", "Kiswahili"),
+    "SWA_to_ENG": ("swa_to_eng", "English"),
+}
 
 
 class InstructionTaskGenerator:
     """Generates 6-way bidirectional instruction-tuning tasks from multilingual concepts."""
 
-    TASK_PROMPTS = {
-        "ENG_to_EKE": ("Translate the following English text into Ekegusii:\n\nInput: {src}", "Ekegusii"),
-        "EKE_to_ENG": ("Translate the following Ekegusii text into English:\n\nInput: {src}", "English"),
-        "SWA_to_EKE": ("Translate the following Kiswahili text into Ekegusii:\n\nInput: {src}", "Ekegusii"),
-        "EKE_to_SWA": ("Translate the following Ekegusii text into Kiswahili:\n\nInput: {src}", "Kiswahili"),
-        "ENG_to_SWA": ("Translate the following English text into Kiswahili:\n\nInput: {src}", "Kiswahili"),
-        "SWA_to_ENG": ("Translate the following Kiswahili text into English:\n\nInput: {src}", "English"),
-    }
-
     def __init__(self, manager: Optional[MasterCorpusManager] = None) -> None:
-        """Initialize with an optional MasterCorpusManager instance."""
+        """Initialize with an optional MasterCorpusManager instance.
+
+        Loads prompt templates from `configs/prompts/templates.yaml` at
+        construction time.
+
+        Raises:
+            src.utils.config.ConfigError: If the templates config is
+                missing or malformed.
+        """
         self.manager = manager or MasterCorpusManager()
+        templates = load_prompt_templates()["translation"]
+        self.TASK_PROMPTS = {
+            task_type: (templates[config_key], target_lang)
+            for task_type, (config_key, target_lang) in _TASK_CONFIG_KEYS.items()
+        }
 
     def generate_tasks_from_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Expand a DataFrame of multilingual concepts into 6 bidirectional instruction tasks.
