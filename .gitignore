@@ -53,8 +53,10 @@ wandb/
 .hydra/
 
 # Large Model Weights, LoRA Adapters & Checkpoints (>50MB)
+# NOTE: Only ignore downloaded HuggingFace weights, NOT src/models/ source code
 checkpoints/
-models/
+checkpoints/models/
+outputs/models/
 *.bin
 *.pt
 *.pth

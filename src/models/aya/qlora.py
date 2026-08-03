@@ -1,0 +1,88 @@
+"""
+Cohere Aya 23 8B QLoRA Fine-Tuning Module
+------------------------------------------
+Handles BitsAndBytes 4-bit NormalFloat quantization, PEFT LoRA configuration,
+and SFTTrainer setup for Cohere Aya-23 8B model fine-tuning on NVIDIA A100 GPU.
+"""
+
+import logging
+import os
+from typing import Any, Tuple
+
+import torch
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training, TaskType
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    TrainingArguments,
+)
+from trl import SFTTrainer
+
+logger = logging.getLogger(__name__)
+
+
+class AyaQLoRATrainer:
+    """Manages QLoRA fine-tuning for Cohere Aya-23 8B."""
+
+    MODEL_ID = "CohereForAI/aya-23-8B"
+
+    def __init__(self, output_dir: str = "checkpoints/aya", r: int = 32, lora_alpha: int = 64) -> None:
+        """Initialize trainer parameters.
+
+        Args:
+            output_dir: Directory where checkpoints will be saved.
+            r: LoRA rank parameter.
+            lora_alpha: LoRA alpha scaling factor.
+        """
+        self.output_dir = output_dir
+        self.r = r
+        self.lora_alpha = lora_alpha
+        os.makedirs(self.output_dir, exist_ok=True)
+
+    def load_model_and_tokenizer(self) -> Tuple[Any, Any]:
+        """Load quantized 4-bit base model and fast subword tokenizer.
+
+        Returns:
+            Tuple of (model, tokenizer).
+        """
+        logger.info(f"Loading 4-bit quantized model: {self.MODEL_ID}")
+
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+
+        tokenizer = AutoTokenizer.from_pretrained(
+            self.MODEL_ID,
+            padding_side="left",
+            trust_remote_code=False,
+        )
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+
+        base_model = AutoModelForCausalLM.from_pretrained(
+            self.MODEL_ID,
+            quantization_config=bnb_config,
+            device_map="auto",
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=False,
+        )
+
+        base_model = prepare_model_for_kbit_training(base_model)
+
+        peft_config = LoraConfig(
+            task_type=TaskType.CAUSAL_LM,
+            r=self.r,
+            lora_alpha=self.lora_alpha,
+            lora_dropout=0.05,
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+            bias="none",
+        )
+
+        model = get_peft_model(base_model, peft_config)
+        model.print_trainable_parameters()
+
+        return model, tokenizer
