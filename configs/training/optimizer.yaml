@@ -1,0 +1,2 @@
+learning_rate: 0.0002
+optimizer: paged_adamw_8bit

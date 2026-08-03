@@ -1,0 +1,5 @@
+eval_steps: 500
+metrics:
+- sacrebleu
+- chrf
+- lexical_accuracy
