@@ -1,3 +1,24 @@
+# Bilingual (two-language) training subsets derived from the master corpus,
+# used by resource-controlled experiments E1 (English-Ekegusii) and
+# E2 (Swahili-Ekegusii). Validation/test are NEVER taken from a separate
+# derived file -- they always resolve to the fixed master val/test splits
+# (see configs/datasets/master.yaml), projected down to the relevant
+# language columns, so every experiment is scored on the identical
+# held-out set regardless of which resources it trained on.
+
+name: bilingual
+description: >-
+  Two-language parallel training subsets used by E1, E2, and E3
+  (combined bilingual).
+
 pairs:
-- eng-eke
-- swh-eke
+  eng-eke:
+    languages: [English, Ekegusii]
+    train_path: data/master_corpus/splits/derived_train_eng_eke.csv
+    expected_rows: 37721
+  swh-eke:
+    languages: [Kiswahili, Ekegusii]
+    train_path: data/master_corpus/splits/derived_train_swa_eke.csv
+    expected_rows: 27092
+
+eval_source: master

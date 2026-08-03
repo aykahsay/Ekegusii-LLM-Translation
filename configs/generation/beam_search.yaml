@@ -1,0 +1,12 @@
+# Wider beam search profile for final-model (E8) inference and publication
+# figures, where translation quality matters more than throughput.
+
+max_new_tokens: 256
+min_new_tokens: 1
+num_beams: 8
+do_sample: false
+length_penalty: 1.1
+repetition_penalty: 1.25
+no_repeat_ngram_size: 3
+early_stopping: true
+num_return_sequences: 1

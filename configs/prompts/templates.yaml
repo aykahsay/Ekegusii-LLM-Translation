@@ -27,5 +27,19 @@ translation:
 
 
     Output:'
+  eng_to_swa: 'Translate the following English text into Kiswahili:
+
+
+    Input: {src}
+
+
+    Output:'
+  swa_to_eng: 'Translate the following Kiswahili text into English:
+
+
+    Input: {src}
+
+
+    Output:'
   system_prompt: You are an expert translator specializing in low-resource African
     languages.

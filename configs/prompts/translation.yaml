@@ -1,1 +1,24 @@
-template: Translate {src_lang} to {tgt_lang}
+# Chat-formatted translation prompt used at instruction-tuning and inference
+# time. Distinct from configs/prompts/templates.yaml (raw completion-style
+# templates used by the batch InstructionTaskGenerator): this is the
+# multi-turn chat structure passed to `tokenizer.apply_chat_template()` for
+# Aya-23 / Llama-3.1-Instruct, both of which expect a system/user/assistant
+# turn list rather than a single flat string.
+
+system_prompt: >-
+  You are an expert translator specializing in low-resource African languages,
+  with fluency in English, Kiswahili, and Ekegusii. Translate faithfully,
+  preserving meaning, register, and cultural nuance. Respond with only the
+  translated text -- no explanations, no additional commentary.
+
+user_turn_template: >-
+  Translate the following {src_lang} text into {tgt_lang}.
+
+  {src_lang} text: {src}
+
+  {tgt_lang} translation:
+
+few_shot:
+  enabled: true
+  num_examples: 3
+  selection_strategy: random_same_domain

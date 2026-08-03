@@ -1,4 +1,16 @@
-sources:
-- eng
-- swh
-- eke
+# Single-language projections of the master sentence corpus. Used for
+# tokenizer vocabulary/fragmentation analysis (notebook 04) and E0 baseline
+# zero-shot probing -- NOT used for supervised translation training directly.
+#
+# No separate monolingual CSV is persisted per language: each view is
+# derived at runtime by selecting the corresponding column from
+# source_corpus and dropping empty/NaN rows, avoiding triplicating the same
+# underlying sentences across additional files.
+
+name: monolingual
+description: >-
+  Per-language sentence views used for tokenizer analysis and zero-shot
+  baseline probing.
+
+languages: [English, Kiswahili, Ekegusii]
+source_corpus: data/master_corpus/master_sentence_corpus.csv

@@ -1,1 +1,22 @@
-path: data/master_corpus/master_lexical_corpus.csv
+# Master Lexical Corpus -- dictionary-level entries used for lexical
+# augmentation (E6) and rare-word/terminology evaluation.
+
+name: lexical
+description: >-
+  Dictionary entries (English-Kiswahili-Ekegusii) used to generate
+  lexical-augmentation instruction tasks (E6) and to evaluate rare-word /
+  terminology translation accuracy.
+
+corpus_path: data/master_corpus/master_lexical_corpus.csv
+
+columns:
+  id: lexicon_id
+  languages: [English, Kiswahili, Ekegusii]
+  source: source
+
+expected_rows: 268
+
+notes: >-
+  Some entries have an empty English column (dictionary gloss recorded only
+  in Kiswahili/Ekegusii) -- consumers must handle missing English values
+  rather than assuming full trilingual coverage on every row.

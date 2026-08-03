@@ -1,0 +1,10 @@
+# Greedy decoding profile: fastest, used for quick smoke tests / sanity
+# checks during development (e.g. verifying a checkpoint loads and produces
+# non-garbage output) rather than for reported evaluation numbers.
+
+max_new_tokens: 256
+min_new_tokens: 1
+num_beams: 1
+do_sample: false
+repetition_penalty: 1.25
+no_repeat_ngram_size: 3

@@ -1,1 +1,15 @@
-path: data/master_corpus/splits/derived_train_trilingual.csv
+# Complete English-Kiswahili-Ekegusii triplets (all three languages present
+# for the same concept). Used from E4 (Trilingual) onward, where the model
+# is trained on fully-aligned multilingual supervision rather than
+# independent bilingual pairs.
+
+name: trilingual
+description: >-
+  Complete trilingual triplets used by E4 (Trilingual) and all subsequent
+  experiments (E5-E8) that build on top of it.
+
+languages: [English, Kiswahili, Ekegusii]
+train_path: data/master_corpus/splits/derived_train_trilingual.csv
+expected_rows: 27092
+
+eval_source: master

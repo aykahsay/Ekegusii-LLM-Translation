@@ -1,4 +1,21 @@
-languages:
-- eng
-- swh
-- eke
+# Multilingual data-mixing configuration for the Resource Scheduler
+# (src/master_corpus/scheduler.py, notebook 06). Controls how much of each
+# language/direction is sampled per training batch when multiple resources
+# (bilingual + trilingual + lexical) are combined, e.g. for E5 (Full
+# Resources) and E7 (Curriculum Learning).
+
+languages: [eng, swh, eke]
+
+direction_weights:
+  eng_to_eke: 1.0
+  eke_to_eng: 1.0
+  swa_to_eke: 1.0
+  eke_to_swa: 1.0
+  eng_to_swa: 0.5   # not the project's core low-resource direction; down-weighted
+  swa_to_eng: 0.5
+
+sampling_temperature: 1.5   # >1 flattens the distribution, up-sampling low-resource pairs
+
+lexical_augmentation:
+  enabled: false          # set true for E6 onward
+  mix_ratio: 0.10         # fraction of each batch drawn from the lexical corpus

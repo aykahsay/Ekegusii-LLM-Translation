@@ -1,0 +1,13 @@
+# Nucleus (top-p) sampling profile -- used for generating diverse candidate
+# translations for round-trip back-translation augmentation, NOT for
+# reported evaluation numbers (see default.yaml for that).
+
+max_new_tokens: 256
+min_new_tokens: 1
+do_sample: true
+temperature: 0.8
+top_p: 0.9
+top_k: 50
+repetition_penalty: 1.15
+no_repeat_ngram_size: 3
+num_return_sequences: 3

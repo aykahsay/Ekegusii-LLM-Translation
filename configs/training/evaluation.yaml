@@ -1,5 +1,26 @@
+# Evaluation-loop configuration used during QLoRA training (periodic
+# checkpoint evaluation) and by the standalone evaluation CLI/notebook.
+
 eval_steps: 500
+eval_strategy: steps       # "steps" or "epoch"
+per_device_eval_batch_size: 8
+
 metrics:
-- sacrebleu
-- chrf
-- lexical_accuracy
+  - sacrebleu
+  - chrf
+  - comet
+  - lexical_accuracy
+  - rare_word_accuracy
+
+generation:
+  max_new_tokens: 256
+  num_beams: 4
+  do_sample: false
+
+save_best_metric: comet
+greater_is_better: true
+
+early_stopping:
+  enabled: true
+  patience: 3
+  min_delta: 0.001

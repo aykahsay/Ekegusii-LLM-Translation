@@ -1,2 +1,9 @@
-lr_scheduler: cosine
+# Learning-rate schedule configuration. Kept separate from optimizer.yaml
+# (which configures the optimizer algorithm itself) so either can be swapped
+# independently across experiments.
+
+lr_scheduler_type: cosine
 warmup_ratio: 0.1
+warmup_steps: 0          # if > 0, overrides warmup_ratio
+num_cycles: 0.5          # cosine: fraction of a cosine period completed by end of training
+min_lr_ratio: 0.1        # floor for cosine decay, as a fraction of the peak learning rate

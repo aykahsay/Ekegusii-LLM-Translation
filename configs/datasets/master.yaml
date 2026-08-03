@@ -1,1 +1,33 @@
-path: data/master_corpus/master_sentence_corpus.csv
+# Master Sentence Corpus -- the single canonical source of truth.
+# The train/val/test split defined here MUST NEVER be regenerated once
+# created: every experiment (E0-E8) is evaluated against the exact same
+# held-out val/test set so that resource-contribution comparisons are valid.
+
+name: master
+description: >-
+  Full trilingual (English-Kiswahili-Ekegusii) sentence corpus with a fixed
+  80/10/10 train/val/test split.
+
+corpus_path: data/master_corpus/master_sentence_corpus.csv
+
+splits:
+  train: data/master_corpus/splits/master_train.csv
+  val: data/master_corpus/splits/master_val.csv
+  test: data/master_corpus/splits/master_test.csv
+
+columns:
+  id: concept_id
+  languages: [English, Kiswahili, Ekegusii]
+  source: source
+  dataset_origin: dataset_origin
+
+expected_rows:
+  total: 49277
+  train: 39421
+  val: 4928
+  test: 4928
+
+split_ratios:
+  train: 0.80
+  val: 0.10
+  test: 0.10

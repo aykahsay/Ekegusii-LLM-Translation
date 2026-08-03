@@ -1,1 +1,23 @@
-template: 'Define or translate term: {term}'
+# Prompt templates for lexical-augmentation instruction tasks (E6), generated
+# from data/master_corpus/master_lexical_corpus.csv (268 dictionary entries).
+# These are shorter, single-term tasks distinct from the full-sentence
+# translation prompts in translation.yaml / templates.yaml -- they teach the
+# model dictionary-level term correspondences to complement sentence-level
+# supervision.
+
+system_prompt: >-
+  You are a bilingual/trilingual lexicon expert for English, Kiswahili, and
+  Ekegusii. Answer with only the requested term or definition.
+
+define_term: 'Give the {tgt_lang} equivalent of the following {src_lang} term:
+
+
+  Term: {term}
+
+
+  {tgt_lang} equivalent:'
+
+use_in_sentence: 'Use the {src_lang} term "{term}" (meaning "{gloss}" in {tgt_lang})
+  in a short, natural {src_lang} sentence.'
+
+rare_word_probe: 'What is the {tgt_lang} translation of the {src_lang} word "{term}"?'
