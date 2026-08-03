@@ -1,9 +1,9 @@
 """
-Automatic Notebook Working Directory Fixer
-------------------------------------------
-Injects automatic root path detection into all 13 Jupyter notebooks so that:
-1. Relative paths to data/master_corpus/ work seamlessly whether running from root or notebooks/.
-2. import src... works seamlessly without needing pip install -e . or git installed.
+Fix All Research Notebook Path Boosters
+-----------------------------------------
+Replaces the old fragile path booster (which breaks on Kineses when
+os.getcwd() raises FileNotFoundError) with a robust home-based booster
+that works on ANY Jupyter environment including Kineses Cloud.
 """
 
 import os
@@ -12,52 +12,105 @@ import json
 WORKSPACE_DIR = r"c:\Users\Admin\OneDrive - United States International University (USIU)\Documents\NLP\Multilogual_transaltion_nlp"
 NOTEBOOKS_DIR = os.path.join(WORKSPACE_DIR, "notebooks")
 
-PATH_FIX_CELL = {
+# Old booster signature to detect & replace
+OLD_BOOSTER_MARKER = "AUTOMATIC WORKING DIRECTORY & IMPORT PATH BOOSTER"
+
+# New robust booster that works on Kineses (handles invalid CWD gracefully)
+NEW_PATH_BOOSTER_CELL = {
     "cell_type": "code",
     "execution_count": None,
     "metadata": {},
     "outputs": [],
     "source": [
-        "# AUTOMATIC WORKING DIRECTORY & IMPORT PATH BOOSTER\n",
-        "# Works seamlessly in Jupyter Notebook / Lab / Google Colab / Kaggle without git\n",
-        "import os\n",
-        "import sys\n\n",
-        "if os.path.basename(os.getcwd()) == 'notebooks':\n",
+        "# ============================================================\n",
+        "# PATH BOOSTER — Works on Kineses / Jupyter / Colab / Kaggle\n",
+        "# Handles FileNotFoundError when kernel CWD no longer exists.\n",
+        "# ============================================================\n",
+        "import os, sys\n",
+        "\n",
+        "# Step 1: Safely get current directory (may throw on Kineses)\n",
+        "try:\n",
+        "    cwd = os.getcwd()\n",
+        "except FileNotFoundError:\n",
+        "    cwd = os.path.expanduser('~')\n",
+        "    os.chdir(cwd)\n",
+        "\n",
+        "# Step 2: Always try the known Kineses project path first\n",
+        "kineses_proj = os.path.join(os.path.expanduser('~'), 'Ekegusii-LLM-Translation-main')\n",
+        "if os.path.isdir(kineses_proj):\n",
+        "    os.chdir(kineses_proj)\n",
+        "elif os.path.basename(os.getcwd()) == 'notebooks':\n",
         "    os.chdir('..')\n",
-        "if os.getcwd() not in sys.path:\n",
-        "    sys.path.append(os.getcwd())\n\n",
-        "print('Current Working Directory:', os.getcwd())\n",
-        "print('Python Path Configured Successfully!')"
+        "\n",
+        "# Step 3: Add project root to Python path\n",
+        "proj_root = os.getcwd()\n",
+        "if proj_root not in sys.path:\n",
+        "    sys.path.insert(0, proj_root)\n",
+        "\n",
+        "print(f'✅ Working Directory : {os.getcwd()}')\n",
+        "print(f'✅ Python Kernel     : {sys.executable}')"
     ]
 }
 
+
 def fix_all_notebooks():
-    print("=== Injecting Automatic Root Path Fix into All 13 Notebooks ===")
-    
+    print("=== Fixing Path Boosters in All Research Notebooks ===\n")
+
+    fixed = 0
+    skipped = 0
+
     for filename in sorted(os.listdir(NOTEBOOKS_DIR)):
-        if filename.endswith(".ipynb"):
-            filepath = os.path.join(NOTEBOOKS_DIR, filename)
-            
-            with open(filepath, 'r', encoding='utf-8') as f:
-                nb = json.load(f)
-                
-            # Check if path fix is already injected
-            has_fix = False
-            for cell in nb.get("cells", []):
-                if cell.get("cell_type") == "code" and "AUTOMATIC WORKING DIRECTORY" in "".join(cell.get("source", [])):
-                    has_fix = True
-                    break
-                    
-            if not has_fix:
-                # Insert path fix cell right after markdown title cell
-                nb["cells"].insert(1, PATH_FIX_CELL)
-                
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    json.dump(nb, f, indent=2)
-                    
-                print(f"[OK] Injected path booster into: {filename}")
+        if not filename.endswith(".ipynb"):
+            continue
+
+        filepath = os.path.join(NOTEBOOKS_DIR, filename)
+
+        with open(filepath, "r", encoding="utf-8") as f:
+            nb = json.load(f)
+
+        cells = nb.get("cells", [])
+        new_cells = []
+        replaced = False
+        skip_next = False
+
+        for i, cell in enumerate(cells):
+            src = "".join(cell.get("source", []))
+
+            # Remove old broken booster code cell
+            if cell.get("cell_type") == "code" and OLD_BOOSTER_MARKER in src:
+                new_cells.append(NEW_PATH_BOOSTER_CELL)
+                replaced = True
+                print(f"  [REPLACED] {filename}")
+                continue
+
+            new_cells.append(cell)
+
+        # If no old booster found, inject after title cell
+        if not replaced:
+            # Check if new booster already present
+            has_new = any(
+                "PATH BOOSTER" in "".join(c.get("source", []))
+                for c in cells
+                if c.get("cell_type") == "code"
+            )
+            if not has_new:
+                new_cells.insert(1, NEW_PATH_BOOSTER_CELL)
+                print(f"  [INJECTED] {filename}")
+                replaced = True
             else:
-                print(f"[SKIP] Path booster already present in: {filename}")
+                print(f"  [OK]       {filename} — already has new booster")
+                skipped += 1
+
+        nb["cells"] = new_cells
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(nb, f, indent=2)
+
+        if replaced:
+            fixed += 1
+
+    print(f"\n=== Done: {fixed} notebooks fixed, {skipped} already OK ===")
+
 
 if __name__ == "__main__":
     fix_all_notebooks()
