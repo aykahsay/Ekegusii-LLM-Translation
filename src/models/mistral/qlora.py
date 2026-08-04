@@ -73,6 +73,7 @@ class MistralQLoRATrainer:
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
+        os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
         device_target = {"": torch.cuda.current_device()} if torch.cuda.is_available() else "auto"
         try:
             base_model = AutoModelForCausalLM.from_pretrained(
@@ -80,6 +81,7 @@ class MistralQLoRATrainer:
                 quantization_config=bnb_config,
                 device_map=device_target,
                 dtype=torch.bfloat16,
+                low_cpu_mem_usage=True,
                 trust_remote_code=False,
             )
         except OSError as exc:
