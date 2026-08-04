@@ -31,8 +31,8 @@ from src.utils.constants import CONFIGS_DIR, SUPPORTED_MODELS
 
 logger = logging.getLogger(__name__)
 
-_MODEL_CONFIG_FILES = {"qwen": "qwen_7b.yaml", "llama": "llama31_8b.yaml"}
-_QLORA_CONFIG_FILES = {"qwen": "qwen_7b_qlora.yaml", "llama": "llama31_8b_qlora.yaml"}
+_MODEL_CONFIG_FILES = {"qwen": "qwen_7b.yaml", "mistral": "mistral_7b.yaml"}
+_QLORA_CONFIG_FILES = {"qwen": "qwen_7b_qlora.yaml", "mistral": "mistral_7b_qlora.yaml"}
 
 
 class ConfigError(Exception):
@@ -71,7 +71,7 @@ def load_model_config(model_name: str) -> ConfigDict:
     `configs/models/{model}_8b.yaml` (per-model architecture/generation spec).
 
     Args:
-        model_name: One of `src.utils.constants.SUPPORTED_MODELS` ("qwen", "llama").
+        model_name: One of `src.utils.constants.SUPPORTED_MODELS` ("qwen", "mistral").
 
     Returns:
         ConfigDict: Merged model configuration.
@@ -95,7 +95,7 @@ def load_qlora_config(model_name: str) -> ConfigDict:
     learning rate, epochs, and target modules).
 
     Args:
-        model_name: One of `src.utils.constants.SUPPORTED_MODELS` ("qwen", "llama").
+        model_name: One of `src.utils.constants.SUPPORTED_MODELS` ("qwen", "mistral").
 
     Returns:
         ConfigDict: Merged QLoRA training configuration.
@@ -166,7 +166,7 @@ def compose_experiment_config(
     into a single namespaced configuration object.
 
     Args:
-        model_name: One of `src.utils.constants.SUPPORTED_MODELS` ("qwen", "llama").
+        model_name: One of `src.utils.constants.SUPPORTED_MODELS` ("qwen", "mistral").
         dataset_name: Dataset config to attach (see `load_dataset_config`).
         generation_profile: Generation config profile to attach (see
             `load_generation_config`).

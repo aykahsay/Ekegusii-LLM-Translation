@@ -61,7 +61,7 @@ class AblationAggregator:
 
         Args:
             model_key: Which model's results to extract from each
-                experiment's results dict ("qwen" or "llama").
+                experiment's results dict ("qwen" or "mistral").
 
         Returns:
             pd.DataFrame: Output of `ResourceAttributionAnalyzer.generate_full_attribution_report`.
@@ -108,7 +108,7 @@ class AblationAggregator:
         """Determine which E0-E7 experiment should become E8 (Final Model).
 
         Args:
-            model_key: Which model's results to compare ("qwen" or "llama").
+            model_key: Which model's results to compare ("qwen" or "mistral").
             metric: Metric key to rank experiments by (higher is better).
 
         Returns:

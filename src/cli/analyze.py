@@ -20,7 +20,7 @@ def run_analyze(model_key: str = "qwen") -> Dict[str, Any]:
     """Build the current attribution report and final-model recommendation.
 
     Args:
-        model_key: Which model's results to analyze ("qwen" or "llama").
+        model_key: Which model's results to analyze ("qwen" or "mistral").
 
     Returns:
         Dict[str, Any]: Keys "attribution_table" (pd.DataFrame) and

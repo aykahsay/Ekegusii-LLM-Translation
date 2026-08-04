@@ -2,7 +2,7 @@
 CLI: translate
 ------------------
 Interactive single/batch sentence translation entry point, dispatching to
-Qwen or Llama inference.
+Qwen or Mistral inference.
 """
 
 import logging
@@ -25,7 +25,7 @@ def run_translate(
         sentences: Source-language sentences to translate.
         source_lang: Source language (e.g. "English").
         target_lang: Target language (e.g. "Ekegusii").
-        model_name: "qwen" or "llama".
+        model_name: "qwen" or "mistral".
         adapter_path: Optional trained LoRA adapter checkpoint path. If
             None, uses the zero-shot base model.
         generation_profile: Decoding profile name (see `configs/generation/`).
@@ -34,15 +34,15 @@ def run_translate(
         List[str]: Translations, same order as `sentences`.
 
     Raises:
-        ValueError: If `model_name` is not "qwen" or "llama".
+        ValueError: If `model_name` is not "qwen" or "mistral".
     """
     if model_name == "qwen":
         from src.models.qwen.inference import translate_with_qwen
 
         return translate_with_qwen(sentences, source_lang, target_lang, adapter_path, generation_profile)
-    if model_name == "llama":
-        from src.models.llama.inference import translate_with_llama
+    if model_name == "mistral":
+        from src.models.mistral.inference import translate_with_mistral
 
-        return translate_with_llama(sentences, source_lang, target_lang, adapter_path, generation_profile)
+        return translate_with_mistral(sentences, source_lang, target_lang, adapter_path, generation_profile)
 
-    raise ValueError(f"model_name must be 'qwen' or 'llama', got '{model_name}'.")
+    raise ValueError(f"model_name must be 'qwen' or 'mistral', got '{model_name}'.")

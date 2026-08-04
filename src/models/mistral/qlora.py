@@ -1,8 +1,14 @@
 """
-Meta Llama 3.1 8B Instruct QLoRA Fine-Tuning Module
+Mistral-7B-Instruct-v0.3 QLoRA Fine-Tuning Module
 ---------------------------------------------------
 Handles BitsAndBytes 4-bit NormalFloat quantization, PEFT LoRA configuration,
-and SFTTrainer setup for Meta Llama-3.1 8B Instruct model fine-tuning on NVIDIA A100 GPU.
+and SFTTrainer setup for Mistral-7B-Instruct-v0.3 model fine-tuning on NVIDIA A100 GPU.
+
+Replaced Meta Llama-3.1-8B-Instruct in this project: Llama required a
+gated-repo access request that blocked iteration; Mistral-7B-Instruct-v0.3
+is fully open (Apache 2.0, no authentication needed) and shares Llama's
+module naming (q_proj/k_proj/v_proj/o_proj/gate_proj/up_proj/down_proj),
+so no target_modules changes were needed.
 """
 
 import logging
@@ -23,12 +29,12 @@ from src.utils.hub_auth import raise_with_access_guidance
 logger = logging.getLogger(__name__)
 
 
-class LlamaQLoRATrainer:
-    """Manages QLoRA fine-tuning for Meta Llama-3.1 8B Instruct."""
+class MistralQLoRATrainer:
+    """Manages QLoRA fine-tuning for Mistral-7B-Instruct-v0.3."""
 
-    MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
+    MODEL_ID = "mistralai/Mistral-7B-Instruct-v0.3"
 
-    def __init__(self, output_dir: str = "checkpoints/llama", r: int = 32, lora_alpha: int = 64) -> None:
+    def __init__(self, output_dir: str = "checkpoints/mistral", r: int = 32, lora_alpha: int = 64) -> None:
         """Initialize trainer parameters.
 
         Args:
@@ -47,7 +53,7 @@ class LlamaQLoRATrainer:
         Returns:
             Tuple of (model, tokenizer).
         """
-        logger.info(f"Loading 4-bit quantized Llama model: {self.MODEL_ID}")
+        logger.info(f"Loading 4-bit quantized Mistral model: {self.MODEL_ID}")
 
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,

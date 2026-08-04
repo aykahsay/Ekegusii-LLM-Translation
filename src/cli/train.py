@@ -3,7 +3,7 @@ CLI: train
 --------------
 Dispatches to the correct experiment (E1-E7; E0 is zero-shot-only, E8 is
 selected by the ablation aggregator afterward, not trained directly) and
-model (Qwen/Llama) training pipeline. Splits each experiment's training
+model (Qwen/Mistral) training pipeline. Splits each experiment's training
 tasks into a training pool and a small in-training validation slice
 (DISTINCT from the fixed master test split, which is reserved for final
 scoring only).
@@ -22,7 +22,7 @@ from src.experiments.lexical import LexicalAugmentationExperiment
 from src.experiments.mono import FullResourcesExperiment
 from src.experiments.trilingual import TrilingualExperiment
 from src.models.common import run_qlora_training
-from src.models.llama.qlora import LlamaQLoRATrainer
+from src.models.mistral.qlora import MistralQLoRATrainer
 from src.models.qwen.qlora import QwenQLoRATrainer
 from src.utils.config import load_qlora_config
 from src.utils.seed import set_seed
@@ -39,7 +39,7 @@ TRAINABLE_EXPERIMENTS: Dict[str, Callable[[], BaseExperiment]] = {
     "E7_Curriculum_Learning": CurriculumLearningExperiment,
 }
 
-_QLORA_TRAINERS = {"qwen": QwenQLoRATrainer, "llama": LlamaQLoRATrainer}
+_QLORA_TRAINERS = {"qwen": QwenQLoRATrainer, "mistral": MistralQLoRATrainer}
 
 
 def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -> Trainer:
@@ -47,7 +47,7 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
 
     Args:
         experiment_id: One of `TRAINABLE_EXPERIMENTS`'s keys (E1-E7).
-        model_name: "qwen" or "llama".
+        model_name: "qwen" or "mistral".
         val_fraction: Fraction of the experiment's training tasks held out
             for in-training validation/early-stopping (not the final test set).
 
@@ -56,7 +56,7 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
 
     Raises:
         ValueError: If `experiment_id` is not trainable, or `model_name`
-            is not "qwen"/"llama".
+            is not "qwen"/"mistral".
     """
     if experiment_id not in TRAINABLE_EXPERIMENTS:
         raise ValueError(
@@ -65,7 +65,7 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
             "afterward by the ablation aggregator)."
         )
     if model_name not in _QLORA_TRAINERS:
-        raise ValueError(f"model_name must be 'qwen' or 'llama', got '{model_name}'.")
+        raise ValueError(f"model_name must be 'qwen' or 'mistral', got '{model_name}'.")
 
     set_seed(42)
     experiment = TRAINABLE_EXPERIMENTS[experiment_id]()

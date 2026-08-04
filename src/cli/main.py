@@ -76,9 +76,9 @@ def evaluate() -> None:
 @app.command()
 def train(
     experiment_id: str = typer.Argument(..., help="One of E1-E7 (see src.cli.train.TRAINABLE_EXPERIMENTS)."),
-    model_name: str = typer.Option("qwen", help="'qwen' or 'llama'."),
+    model_name: str = typer.Option("qwen", help="'qwen' or 'mistral'."),
 ) -> None:
-    """Fine-tune a model (Qwen/Llama) on one experiment's resource configuration."""
+    """Fine-tune a model (Qwen/Mistral) on one experiment's resource configuration."""
     from src.cli.train import run_train
 
     console.print(f"[bold blue]=== Training {model_name} on {experiment_id} ===[/bold blue]")
@@ -92,7 +92,7 @@ def train(
 
 @app.command(name="run-eval")
 def run_eval_command(
-    model_name: str = typer.Option("qwen", help="'qwen' or 'llama'."),
+    model_name: str = typer.Option("qwen", help="'qwen' or 'mistral'."),
     source_lang: str = typer.Option("English"),
     target_lang: str = typer.Option("Ekegusii"),
     adapter_path: Optional[str] = typer.Option(None, help="Trained LoRA checkpoint path; omit for zero-shot."),
@@ -111,7 +111,7 @@ def translate(
     text: str = typer.Argument(..., help="Sentence to translate."),
     source_lang: str = typer.Option("English"),
     target_lang: str = typer.Option("Ekegusii"),
-    model_name: str = typer.Option("qwen", help="'qwen' or 'llama'."),
+    model_name: str = typer.Option("qwen", help="'qwen' or 'mistral'."),
     adapter_path: Optional[str] = typer.Option(None, help="Trained LoRA checkpoint path; omit for zero-shot."),
 ) -> None:
     """Translate a single sentence interactively."""
@@ -136,7 +136,7 @@ def schedule_preview_command(batch_size: int = typer.Option(32)) -> None:
 
 
 @app.command()
-def analyze(model_key: str = typer.Option("qwen", help="'qwen' or 'llama'.")) -> None:
+def analyze(model_key: str = typer.Option("qwen", help="'qwen' or 'mistral'.")) -> None:
     """Build the ablation attribution matrix and recommend the E8 final-model source."""
     from src.cli.analyze import run_analyze
 

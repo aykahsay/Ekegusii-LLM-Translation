@@ -14,7 +14,7 @@
 | E7 | Curriculum Learning | E6 data, staged easy-to-hard | `src.experiments.curriculum.CurriculumLearningExperiment` |
 | E8 | Final Model | Whichever of E0-E7 scores highest | Selected by `AblationAggregator.select_final_model`, then merged for deployment |
 
-Each experiment trains BOTH Qwen2.5-7B-Instruct and Llama-3.1-8B independently, so the
+Each experiment trains BOTH Qwen2.5-7B-Instruct and Mistral-7B-Instruct-v0.3 independently, so the
 ablation study answers two questions at once: which resource configuration
 helps, and whether the answer differs by base model.
 

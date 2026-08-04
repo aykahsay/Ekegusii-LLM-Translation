@@ -8,10 +8,10 @@ data/master_corpus/  The frozen master sentence/lexical corpora + splits
 src/
   master_corpus/     Loading, validation, cleaning, splitting, statistics, leakage auditing, scheduling
   preprocessing/      Per-cell text normalization, dedup, language ID, filtering, export
-  tokenizer/          Qwen/Llama tokenizer loaders + fertility/vocabulary/rare-word analysis
+  tokenizer/          Qwen/Mistral tokenizer loaders + fertility/vocabulary/rare-word analysis
   task_generation/    Instruction-task construction (sentence-level, lexical, multilingual-mixed)
   datasets/           Tokenization -> HF Dataset, collation, weighted sampling, DataLoader factory
-  models/             QLoRA model loading/training/inference/saving (Qwen + Llama)
+  models/             QLoRA model loading/training/inference/saving (Qwen + Mistral)
   evaluation/         SacreBLEU, chrF, COMET, lexical/rare-word/terminology accuracy, significance, reports
   experiments/        E0-E8 experiment definitions + ablation aggregation
   visualization/      Publication-quality matplotlib figures
@@ -38,10 +38,10 @@ doesn't repeat `hardware`/`seed`/`caching` settings that live in `common.yaml`.
 
 ## Design principle: one shared implementation per cross-cutting concern
 
-Qwen2.5-7B-Instruct and Llama-3.1-8B are trained, checkpointed, and evaluated through an
+Qwen2.5-7B-Instruct and Mistral-7B-Instruct-v0.3 are trained, checkpointed, and evaluated through an
 **identical** QLoRA pipeline -- only the base model ID and hyperparameters differ.
 `src/models/common.py` holds that shared logic once; `src/models/qwen/*.py` and
-`src/models/llama/*.py` are thin wrappers passing their own `MODEL_ID`. The same
+`src/models/mistral/*.py` are thin wrappers passing their own `MODEL_ID`. The same
 pattern applies to `src/experiments/base.py` (shared experiment scaffold) and
 `src/visualization/palette.py` (shared color system).
 

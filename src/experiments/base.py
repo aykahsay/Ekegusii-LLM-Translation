@@ -83,7 +83,7 @@ class BaseExperiment(ABC):
 
         Args:
             tasks_df: Output of `build_training_tasks`.
-            tokenizer: Tokenizer to encode with (Qwen or Llama).
+            tokenizer: Tokenizer to encode with (Qwen or Mistral).
             max_length: Maximum sequence length (prompt + response).
 
         Returns:
@@ -115,7 +115,7 @@ class BaseExperiment(ABC):
 
         Args:
             results: Metrics dict (e.g. output of `evaluate_predictions`),
-                per model (qwen/llama) if both were run.
+                per model (qwen/mistral) if both were run.
 
         Returns:
             Path: `experiments/{experiment_id}/results.json`.

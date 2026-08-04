@@ -18,12 +18,12 @@ bash scripts/build_master_corpus.sh
 echo "[2/4] Training Qwen2.5-7B-Instruct across E1-E7..."
 bash scripts/train_qwen.sh
 
-echo "[3/4] Training Llama-3.1-8B-Instruct across E1-E7..."
-bash scripts/train_llama.sh
+echo "[3/4] Training Mistral-7B-Instruct-v0.3 across E1-E7..."
+bash scripts/train_mistral.sh
 
 echo "[4/4] Aggregating results and selecting E8 final-model source..."
 python -m src.cli.main analyze --model-key qwen
-python -m src.cli.main analyze --model-key llama
+python -m src.cli.main analyze --model-key mistral
 
 echo "======================================================================"
 echo "[SUCCESS] Ablation study complete. See experiments/*/results.json"

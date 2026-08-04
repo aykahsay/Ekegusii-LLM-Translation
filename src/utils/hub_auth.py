@@ -1,15 +1,13 @@
 """
 HuggingFace Hub Gated-Repo Error Guidance
 ----------------------------------------------
-Llama-3.1-8B-Instruct is a gated model: HuggingFace requires a logged-in
-account to have requested/accepted access on the model's page, AND the
-local environment to be authenticated (an `HF_TOKEN` env var or
-`huggingface-cli login`), before `from_pretrained()` will download
-anything. (Qwen2.5-7B-Instruct, the project's other base model, is fully
-open and never hits this path -- Aya-23-8B originally filled this role but
-was replaced specifically to avoid this friction; Llama's license terms
-still require it regardless.) Neither of Llama's two access steps can be
-automated from code -- this module exists only to turn the resulting
+Neither of this project's current base models -- Qwen2.5-7B-Instruct and
+Mistral-7B-Instruct-v0.3 -- is gated on HuggingFace Hub (both are fully
+open, no authentication needed). This module's predecessors filled this
+role for Aya-23-8B and then Llama-3.1-8B-Instruct, both of which were
+replaced specifically to avoid gated-repo friction blocking iteration on
+Kineses Cloud. The guidance mechanism is kept as a generic safety net in
+case a gated model is ever swapped in again: it turns the resulting
 `OSError`/`GatedRepoError` (which surfaces as a long, generic-looking
 traceback) into a short, actionable message pointing at exactly what to
 do, rather than requiring the user to read HuggingFace's internals to
@@ -25,7 +23,8 @@ def raise_with_access_guidance(exc: Exception, model_id: str) -> NoReturn:
     Args:
         exc: The exception caught from a `from_pretrained()` call.
         model_id: The HuggingFace Hub repo ID that was being loaded (e.g.
-            "meta-llama/Llama-3.1-8B-Instruct").
+            a gated model swapped in place of one of this project's
+            default open models).
 
     Raises:
         OSError: Always -- either a rewritten, actionable version of `exc`
@@ -38,7 +37,7 @@ def raise_with_access_guidance(exc: Exception, model_id: str) -> NoReturn:
             f"'{model_id}' is a gated model on HuggingFace Hub -- this is not a bug, "
             f"it requires two one-time steps:\n"
             f"  1. Visit https://huggingface.co/{model_id}, log in, and request/accept access "
-            f"(Cohere/Meta typically approve within minutes to a day).\n"
+            f"(most providers approve within minutes to a day).\n"
             f"  2. Authenticate THIS environment: run `huggingface-cli login` in a terminal/shell "
             f"cell and paste a token from https://huggingface.co/settings/tokens, or set the "
             f"HF_TOKEN environment variable before starting the kernel.\n"

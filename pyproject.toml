@@ -11,7 +11,7 @@ authors = [
     { name = "Aykahsay Research Team", email = "research@ekegusii-nlp.org" }
 ]
 license = { text = "MIT" }
-keywords = ["NLP", "Machine Translation", "Ekegusii", "Low-Resource", "LLM", "QLoRA", "Qwen2.5", "Llama-3.1"]
+keywords = ["NLP", "Machine Translation", "Ekegusii", "Low-Resource", "LLM", "QLoRA", "Qwen2.5", "Mistral-7B"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",

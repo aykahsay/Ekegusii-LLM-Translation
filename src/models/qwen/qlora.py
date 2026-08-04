@@ -5,7 +5,7 @@ Handles BitsAndBytes 4-bit NormalFloat quantization, PEFT LoRA configuration,
 and SFTTrainer setup for Qwen2.5-7B-Instruct model fine-tuning on NVIDIA A100
 GPU. Replaced Cohere Aya-23-8B in this project: Aya required a gated-repo
 access request that blocked iteration; Qwen2.5-7B-Instruct is fully open
-(Apache 2.0, no authentication needed) and close in scale to Llama-3.1-8B,
+(Apache 2.0, no authentication needed) and close in scale to Mistral-7B,
 so the E0-E8 comparison stays meaningful without the access friction.
 """
 

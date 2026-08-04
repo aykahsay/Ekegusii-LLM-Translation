@@ -1,9 +1,9 @@
 #!/bin/bash
 # ==============================================================================
-# Qwen2.5 vs. Llama-3.1 Tokenizer Fertility & Vocabulary Coverage Analysis
-# Backs notebook 04 (tokenizer_analysis) -- run on a machine with Hub access
-# to Qwen/Qwen2.5-7B-Instruct and meta-llama/Llama-3.1-8B-Instruct (the
-# latter requires accepting Meta's license on the Hub).
+# Qwen2.5 vs. Mistral-7B Tokenizer Fertility & Vocabulary Coverage Analysis
+# Backs notebook 04 (tokenizer_analysis) -- both Qwen/Qwen2.5-7B-Instruct and
+# mistralai/Mistral-7B-Instruct-v0.3 are fully open on HuggingFace Hub, so no
+# Hub access requests are needed.
 # ==============================================================================
 
 set -e

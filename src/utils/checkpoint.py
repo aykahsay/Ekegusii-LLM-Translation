@@ -4,7 +4,7 @@ Checkpoint Management for PEFT/QLoRA Training
 Saves and restores PEFT adapter checkpoints together with JSON training-state
 metadata (global step, epoch, best metric so far, optimizer/scheduler state
 paths), enabling resume-from-checkpoint and early-stopping decisions during
-long-running QLoRA fine-tuning of Qwen2.5-7B / Llama-3.1-8B on the A100.
+long-running QLoRA fine-tuning of Qwen2.5-7B / Mistral-7B on the A100.
 
 The base model weights are never re-saved per checkpoint (only the small
 LoRA adapter + tokenizer + metadata are), keeping checkpoints on the order

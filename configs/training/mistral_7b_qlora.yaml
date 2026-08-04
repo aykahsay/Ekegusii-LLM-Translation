@@ -1,5 +1,5 @@
 model:
-  name_or_path: meta-llama/Llama-3.1-8B-Instruct
+  name_or_path: mistralai/Mistral-7B-Instruct-v0.3
   torch_dtype: bfloat16
 qlora:
   lora_alpha: 64

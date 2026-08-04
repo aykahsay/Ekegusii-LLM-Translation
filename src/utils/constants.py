@@ -101,12 +101,12 @@ EXPERIMENT_IDS = (
 
 # --- Models -------------------------------------------------------------------
 MODEL_QWEN = "qwen"
-MODEL_LLAMA = "llama"
-SUPPORTED_MODELS = (MODEL_QWEN, MODEL_LLAMA)
+MODEL_MISTRAL = "mistral"
+SUPPORTED_MODELS = (MODEL_QWEN, MODEL_MISTRAL)
 
 MODEL_HF_PATHS = {
     MODEL_QWEN: "Qwen/Qwen2.5-7B-Instruct",
-    MODEL_LLAMA: "meta-llama/Llama-3.1-8B-Instruct",
+    MODEL_MISTRAL: "mistralai/Mistral-7B-Instruct-v0.3",
 }
 
 # --- Reproducibility ----------------------------------------------------------

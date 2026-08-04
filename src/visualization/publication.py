@@ -29,7 +29,7 @@ def build_main_results_figure(
 ) -> plt.Figure:
     """Build the paper's main 3-panel results figure.
 
-    Panel A: tokenizer fertility by language (Qwen vs Llama).
+    Panel A: tokenizer fertility by language (Qwen vs Mistral).
     Panel B: final metric score by experiment.
     Panel C: resource-contribution waterfall (marginal gains).
 

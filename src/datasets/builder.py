@@ -30,7 +30,7 @@ class InstructionDatasetBuilder:
 
         Args:
             tokenizer: Tokenizer to encode prompts/responses with. Must
-                have a `pad_token` set (see `src.tokenizer.qwen`/`llama`
+                have a `pad_token` set (see `src.tokenizer.qwen`/`mistral`
                 loaders, which set this automatically).
             max_length: Maximum total sequence length (prompt + response);
                 longer examples are truncated from the left of the prompt

@@ -1,6 +1,6 @@
 """
-Llama-3.1 Checkpoint & Deployment Saving
---------------------------------------------
+Mistral-7B-Instruct-v0.3 Checkpoint & Deployment Saving
+------------------------------------------------------------
 Saves training checkpoints and merges the trained LoRA adapter into the
 base model for deployment, mirroring `src.models.qwen.save`.
 """
@@ -17,7 +17,7 @@ from src.utils.checkpoint import CheckpointManager
 logger = logging.getLogger(__name__)
 
 
-def save_llama_checkpoint(
+def save_mistral_checkpoint(
     model: Any,
     tokenizer: PreTrainedTokenizerBase,
     checkpoint_dir: str,
@@ -26,7 +26,7 @@ def save_llama_checkpoint(
     metrics: Dict[str, float],
     is_best: bool = False,
 ) -> Path:
-    """Save a training checkpoint for Llama-3.1-8B-Instruct.
+    """Save a training checkpoint for Mistral-7B-Instruct-v0.3.
 
     Args:
         model: PEFT-wrapped model to save (only the adapter is persisted).
@@ -44,8 +44,8 @@ def save_llama_checkpoint(
     return manager.save(model, tokenizer, step, epoch, metrics, is_best)
 
 
-def save_llama_final_model(
-    model: Any, tokenizer: PreTrainedTokenizerBase, output_dir: str = "models/llama_final"
+def save_mistral_final_model(
+    model: Any, tokenizer: PreTrainedTokenizerBase, output_dir: str = "models/mistral_final"
 ) -> Path:
     """Merge the trained adapter into the base model and save for deployment.
 
@@ -58,5 +58,5 @@ def save_llama_final_model(
         Path: `output_dir`, containing the standalone merged model.
     """
     result = merge_and_save_adapter(model, tokenizer, Path(output_dir))
-    logger.info(f"[Llama] Final deployable model saved to {result}.")
+    logger.info(f"[Mistral] Final deployable model saved to {result}.")
     return result

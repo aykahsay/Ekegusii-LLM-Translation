@@ -1,10 +1,9 @@
 #!/bin/bash
 # ==============================================================================
-# Llama-3.1-8B-Instruct QLoRA Training: Experiments E1-E7
-# Trains Llama on each resource-controlled experiment configuration in turn.
-# Checkpoints land under checkpoints/llama/{EXPERIMENT_ID}/.
-# Requires an NVIDIA A100 (or equivalent) GPU and Hub access to
-# meta-llama/Meta-Llama-3.1-8B-Instruct (accept Meta's license on the Hub first).
+# Mistral-7B-Instruct-v0.3 QLoRA Training: Experiments E1-E7
+# Trains Mistral on each resource-controlled experiment configuration in turn.
+# Checkpoints land under checkpoints/mistral/{EXPERIMENT_ID}/.
+# Requires an NVIDIA A100 (or equivalent) GPU with bitsandbytes 4-bit support.
 # ==============================================================================
 
 set -e
@@ -20,16 +19,16 @@ EXPERIMENTS=(
 )
 
 echo "======================================================================"
-echo "Training Llama-3.1-8B-Instruct: Experiments E1-E7"
+echo "Training Mistral-7B-Instruct-v0.3: Experiments E1-E7"
 echo "======================================================================"
 
 for experiment_id in "${EXPERIMENTS[@]}"; do
     echo "----------------------------------------------------------------------"
-    echo "Training llama on ${experiment_id}..."
+    echo "Training mistral on ${experiment_id}..."
     echo "----------------------------------------------------------------------"
-    python -m src.cli.main train "${experiment_id}" --model-name llama
+    python -m src.cli.main train "${experiment_id}" --model-name mistral
 done
 
 echo "======================================================================"
-echo "[SUCCESS] Llama-3.1-8B-Instruct training complete for all experiments."
+echo "[SUCCESS] Mistral-7B-Instruct-v0.3 training complete for all experiments."
 echo "======================================================================"

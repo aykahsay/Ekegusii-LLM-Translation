@@ -1,10 +1,10 @@
 """
 Tokenizer Comparison Figures
 --------------------------------
-Bar charts for `TokenizerComparator`'s Qwen-vs-Llama fragmentation and
+Bar charts for `TokenizerComparator`'s Qwen-vs-Mistral fragmentation and
 vocabulary-coverage output -- the core figure for notebook 04
 (tokenizer_analysis). One categorical color per model (fixed order: Qwen
-first, Llama second), grouped by language on a single axis.
+first, Mistral second), grouped by language on a single axis.
 """
 
 import logging
@@ -19,7 +19,7 @@ from src.visualization.palette import CATEGORICAL_PALETTE, apply_publication_sty
 
 logger = logging.getLogger(__name__)
 
-_MODEL_COLORS = {"qwen": CATEGORICAL_PALETTE[0], "llama": CATEGORICAL_PALETTE[1]}
+_MODEL_COLORS = {"qwen": CATEGORICAL_PALETTE[0], "mistral": CATEGORICAL_PALETTE[1]}
 
 
 def plot_fertility_comparison(comparison_df: pd.DataFrame, output_path: Optional[Path] = None) -> plt.Figure:
@@ -49,7 +49,7 @@ def plot_fertility_comparison(comparison_df: pd.DataFrame, output_path: Optional
     ax.set_xticks(x + width * (len(models) - 1) / 2)
     ax.set_xticklabels(languages)
     ax.set_ylabel("Mean subword fertility (tokens/word)")
-    ax.set_title("Tokenizer Fertility: Qwen2.5 vs. Llama-3.1")
+    ax.set_title("Tokenizer Fertility: Qwen2.5 vs. Mistral-7B")
     ax.legend(frameon=False)
 
     fig.tight_layout()
@@ -88,7 +88,7 @@ def plot_vocabulary_coverage(coverage_df: pd.DataFrame, output_path: Optional[Pa
     ax.set_xticklabels(languages)
     ax.set_ylabel("Single-token vocabulary coverage (%)")
     ax.set_ylim(0, 100)
-    ax.set_title("Type-Level Vocabulary Coverage: Qwen2.5 vs. Llama-3.1")
+    ax.set_title("Type-Level Vocabulary Coverage: Qwen2.5 vs. Mistral-7B")
     ax.legend(frameon=False)
 
     fig.tight_layout()

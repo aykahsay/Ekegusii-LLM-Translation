@@ -27,7 +27,7 @@ page is a map to find the right one, not a substitute for reading it.
 
 ## Tokenizer analysis
 
-- `src.tokenizer.qwen.load_qwen_tokenizer` / `src.tokenizer.llama.load_llama_tokenizer`
+- `src.tokenizer.qwen.load_qwen_tokenizer` / `src.tokenizer.mistral.load_mistral_tokenizer`
 - `src.tokenizer.compare.TokenizerComparator` -- the notebook-04 entry point:
   `compare()`, `compare_vocabulary_coverage()`, `recommend_base_model()`.
 
@@ -45,7 +45,7 @@ page is a map to find the right one, not a substitute for reading it.
   pairs into a HF `Dataset` with label-masked prompts.
 - `src.datasets.dataloader.build_train_dataloader` / `build_eval_dataloader`
 - `src.models.common.run_qlora_training` -- the shared training loop.
-- `src.models.qwen.trainer.QwenTrainingPipeline` / `src.models.llama.trainer.LlamaTrainingPipeline`
+- `src.models.qwen.trainer.QwenTrainingPipeline` / `src.models.mistral.trainer.MistralTrainingPipeline`
 
 ## Evaluation
 

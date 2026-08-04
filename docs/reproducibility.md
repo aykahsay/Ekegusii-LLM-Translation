@@ -20,7 +20,7 @@ derived train file and the master test file.
 `src.utils.seed.set_seed(42)` seeds Python `random`, NumPy, and PyTorch
 (CPU + all CUDA devices), sets `PYTHONHASHSEED`, and requests deterministic
 CUDA algorithms. Called at the top of every training entry point
-(`QwenTrainingPipeline.run`, `LlamaTrainingPipeline.run`, `src.cli.train.run_train`).
+(`QwenTrainingPipeline.run`, `MistralTrainingPipeline.run`, `src.cli.train.run_train`).
 
 ## Environment
 

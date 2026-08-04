@@ -1,22 +1,22 @@
 """
-Llama-3.1 Translation Inference
-------------------------------------
+Mistral-7B-Instruct-v0.3 Translation Inference
+----------------------------------------------------
 High-level "translate a batch of sentences" entry point for
-Llama-3.1-8B-Instruct, mirroring `src.models.qwen.inference`.
+Mistral-7B-Instruct-v0.3, mirroring `src.models.qwen.inference`.
 """
 
 import logging
 from typing import List, Optional
 
 from src.models.common import generate_translations
-from src.models.llama.load import load_llama_for_inference
+from src.models.mistral.load import load_mistral_for_inference
 from src.task_generation.prompt_templates import format_completion_prompt
 from src.utils.config import load_generation_config
 
 logger = logging.getLogger(__name__)
 
 
-def translate_with_llama(
+def translate_with_mistral(
     sentences: List[str],
     source_lang: str,
     target_lang: str,
@@ -24,7 +24,7 @@ def translate_with_llama(
     generation_profile: str = "default",
     batch_size: int = 8,
 ) -> List[str]:
-    """Translate a list of sentences with Llama-3.1-8B-Instruct.
+    """Translate a list of sentences with Mistral-7B-Instruct-v0.3.
 
     Args:
         sentences: Source-language sentences to translate.
@@ -38,11 +38,11 @@ def translate_with_llama(
     Returns:
         List[str]: Translated sentences, same order and length as `sentences`.
     """
-    model, tokenizer = load_llama_for_inference(adapter_path)
+    model, tokenizer = load_mistral_for_inference(adapter_path)
     generation_cfg = load_generation_config(generation_profile)
 
     prompts = [format_completion_prompt(source_lang, target_lang, s) for s in sentences]
     translations = generate_translations(model, tokenizer, prompts, generation_cfg, batch_size=batch_size)
 
-    logger.info(f"[Llama] Translated {len(sentences):,} sentence(s): {source_lang} -> {target_lang}.")
+    logger.info(f"[Mistral] Translated {len(sentences):,} sentence(s): {source_lang} -> {target_lang}.")
     return translations
