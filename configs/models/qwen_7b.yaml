@@ -1,7 +1,7 @@
 # Qwen2.5-7B-Instruct Model Specification Configuration
 # Replaced Cohere Aya-23-8B: Aya required gated-repo access approval that
 # blocked iteration; Qwen2.5-7B-Instruct is fully open (Apache 2.0, no
-# authentication needed) and close in scale to Llama-3.1-8B.
+# authentication needed) and close in scale to Mistral-7B-Instruct-v0.3.
 
 model:
   name: "qwen_7b"
