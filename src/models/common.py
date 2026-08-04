@@ -180,6 +180,7 @@ def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2Seq
     Returns:
         Seq2SeqTrainingArguments: Configured training arguments.
     """
+    ta = qlora_cfg.training_arguments
     try:
         from transformers.integrations import is_tensorboard_available
         has_tb = is_tensorboard_available()
