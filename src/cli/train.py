@@ -76,10 +76,13 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
     train_tasks, val_tasks = shuffled.iloc[:split_idx], shuffled.iloc[split_idx:]
 
     output_dir = Path(f"checkpoints/{model_name}/{experiment_id}")
+    
+    import gc, torch
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     qlora_trainer = _QLORA_TRAINERS[model_name](output_dir=str(output_dir))
-    # Load the model/tokenizer exactly ONCE here -- both to tokenize the
-    # datasets below and to train on -- rather than letting a separate
-    # training-pipeline wrapper reload the same 8B-parameter model again.
     model, tokenizer = qlora_trainer.load_model_and_tokenizer()
 
     train_dataset = experiment.build_tokenized_dataset(train_tasks, tokenizer)
