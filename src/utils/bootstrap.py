@@ -41,11 +41,17 @@ def ensure_package(module_name: str, pip_spec: str) -> None:
     except ImportError:
         pass
 
+    import site
+    user_site = site.getusersitepackages()
+    if user_site not in sys.path:
+        sys.path.insert(0, user_site)
+
     subprocess.run(
-        [sys.executable, "-m", "pip", "install", "--quiet", "setuptools", "wheel"], check=False
+        [sys.executable, "-m", "pip", "install", "--quiet", "--user", "setuptools", "wheel", "antlr4-python3-runtime==4.9.3"],
+        check=False
     )
     subprocess.run(
-        [sys.executable, "-m", "pip", "install", "--quiet", "--prefer-binary", "--no-build-isolation", pip_spec],
-        check=False,
+        [sys.executable, "-m", "pip", "install", "--quiet", "--user", "--prefer-binary", "--no-build-isolation", pip_spec],
+        check=False
     )
     importlib.import_module(module_name)
