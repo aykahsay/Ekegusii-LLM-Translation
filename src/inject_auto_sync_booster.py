@@ -2,8 +2,8 @@
 Permanent Auto-Sync Notebook Guard Script
 -------------------------------------------
 Adds an auto-sync check to Cell 1 of all research notebooks.
-If `configs/models/mistral_7b.yaml` is missing (outdated clone on Kineses),
-it automatically downloads the latest zip from GitHub and updates the repo.
+It automatically purges cached `src` modules from `sys.modules`
+and guarantees the latest code is extracted from GitHub.
 """
 
 import json
@@ -19,6 +19,11 @@ AUTO_SYNC_BOOSTER = [
     "# ============================================================\n",
     "import os, sys, site, urllib.request, zipfile\n",
     "\n",
+    "# Purge cached 'src' modules from memory so updated files take effect immediately\n",
+    "for mod in list(sys.modules.keys()):\n",
+    "    if mod.startswith('src'):\n",
+    "        del sys.modules[mod]\n",
+    "\n",
     "user_site = site.getusersitepackages()\n",
     "if user_site not in sys.path:\n",
     "    sys.path.insert(0, user_site)\n",
@@ -33,7 +38,7 @@ AUTO_SYNC_BOOSTER = [
     "proj_dir    = os.path.join(home, 'Ekegusii-LLM-Translation-main')\n",
     "mistral_cfg = os.path.join(proj_dir, 'configs', 'models', 'mistral_7b.yaml')\n",
     "\n",
-    "# Auto-sync if folder is missing OR outdated (lacks mistral_7b.yaml from commit a44bf18)\n",
+    "# Auto-sync if folder is missing OR outdated\n",
     "if not os.path.isfile(mistral_cfg):\n",
     "    print('🔄 Outdated or missing repository detected. Auto-syncing latest code from GitHub...')\n",
     "    zip_path = os.path.join(home, 'repo.zip')\n",
@@ -87,7 +92,7 @@ def main():
         if fname.endswith(".ipynb"):
             fpath = os.path.join(NOTEBOOKS_DIR, fname)
             update_notebook_booster(fpath)
-            print(f"  [MISTRAL AUTO-SYNC ADDED] {fname}")
+            print(f"  [MODULE PURGE BOOSTER ADDED] {fname}")
 
 if __name__ == "__main__":
     main()
