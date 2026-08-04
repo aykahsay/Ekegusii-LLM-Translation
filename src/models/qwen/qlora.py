@@ -72,11 +72,12 @@ class QwenQLoRATrainer:
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
+        device_target = {"": torch.cuda.current_device()} if torch.cuda.is_available() else "auto"
         try:
             base_model = AutoModelForCausalLM.from_pretrained(
                 self.MODEL_ID,
                 quantization_config=bnb_config,
-                device_map="auto",
+                device_map=device_target,
                 torch_dtype=torch.bfloat16,
                 trust_remote_code=False,
             )
