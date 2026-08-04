@@ -2,7 +2,7 @@
 Permanent Auto-Sync Notebook Guard Script
 -------------------------------------------
 Adds an auto-sync check to Cell 1 of all research notebooks.
-If `configs/models/qwen_7b.yaml` is missing (outdated clone on Kineses),
+If `configs/models/mistral_7b.yaml` is missing (outdated clone on Kineses),
 it automatically downloads the latest zip from GitHub and updates the repo.
 """
 
@@ -29,12 +29,12 @@ AUTO_SYNC_BOOSTER = [
     "    cwd = os.path.expanduser('~')\n",
     "    os.chdir(cwd)\n",
     "\n",
-    "home     = os.path.expanduser('~')\n",
-    "proj_dir = os.path.join(home, 'Ekegusii-LLM-Translation-main')\n",
-    "qwen_cfg = os.path.join(proj_dir, 'configs', 'models', 'qwen_7b.yaml')\n",
+    "home        = os.path.expanduser('~')\n",
+    "proj_dir    = os.path.join(home, 'Ekegusii-LLM-Translation-main')\n",
+    "mistral_cfg = os.path.join(proj_dir, 'configs', 'models', 'mistral_7b.yaml')\n",
     "\n",
-    "# Auto-sync if folder is missing OR outdated (lacks qwen_7b.yaml)\n",
-    "if not os.path.isfile(qwen_cfg):\n",
+    "# Auto-sync if folder is missing OR outdated (lacks mistral_7b.yaml from commit a44bf18)\n",
+    "if not os.path.isfile(mistral_cfg):\n",
     "    print('🔄 Outdated or missing repository detected. Auto-syncing latest code from GitHub...')\n",
     "    zip_path = os.path.join(home, 'repo.zip')\n",
     "    urllib.request.urlretrieve('https://github.com/aykahsay/Ekegusii-LLM-Translation/archive/refs/heads/main.zip', zip_path)\n",
@@ -87,8 +87,7 @@ def main():
         if fname.endswith(".ipynb"):
             fpath = os.path.join(NOTEBOOKS_DIR, fname)
             update_notebook_booster(fpath)
-            print(f"  [AUTO-SYNC ADDED] {fname}")
-    print("\n✅ All 14 notebooks updated with permanent auto-sync!")
+            print(f"  [MISTRAL AUTO-SYNC ADDED] {fname}")
 
 if __name__ == "__main__":
     main()
