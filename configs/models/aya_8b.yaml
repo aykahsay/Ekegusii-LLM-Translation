@@ -2,7 +2,7 @@
 
 model:
   name: "aya_8b"
-  hf_path: "CohereForAI/aya-23-8B"
+  hf_path: "CohereLabs/aya-23-8B"
   architecture: "CohereForAI"
   params: "8B"
   torch_dtype: "bfloat16"

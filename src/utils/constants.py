@@ -105,8 +105,8 @@ MODEL_LLAMA = "llama"
 SUPPORTED_MODELS = (MODEL_AYA, MODEL_LLAMA)
 
 MODEL_HF_PATHS = {
-    MODEL_AYA: "CohereForAI/aya-23-8B",
-    MODEL_LLAMA: "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    MODEL_AYA: "CohereLabs/aya-23-8B",
+    MODEL_LLAMA: "meta-llama/Llama-3.1-8B-Instruct",
 }
 
 # --- Reproducibility ----------------------------------------------------------

@@ -2,7 +2,7 @@
 
 model:
   name: "llama31_8b"
-  hf_path: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+  hf_path: "meta-llama/Llama-3.1-8B-Instruct"
   architecture: "LlamaForCausalLM"
   params: "8B"
   torch_dtype: "bfloat16"

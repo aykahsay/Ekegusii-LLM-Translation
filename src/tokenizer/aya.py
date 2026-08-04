@@ -12,6 +12,7 @@ import logging
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from src.utils.config import load_model_config
+from src.utils.hub_auth import raise_with_access_guidance
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,14 @@ def load_aya_tokenizer() -> PreTrainedTokenizerBase:
     """
     cfg = load_model_config("aya")
 
-    tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
-        cfg.model.hf_path,
-        use_fast=bool(cfg.model.use_fast_tokenizer),
-        trust_remote_code=bool(cfg.model.trust_remote_code),
-    )
+    try:
+        tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
+            cfg.model.hf_path,
+            use_fast=bool(cfg.model.use_fast_tokenizer),
+            trust_remote_code=bool(cfg.model.trust_remote_code),
+        )
+    except OSError as exc:
+        raise_with_access_guidance(exc, cfg.model.hf_path)
     tokenizer.padding_side = cfg.tokenizer.padding_side
     tokenizer.truncation_side = cfg.tokenizer.truncation_side
     tokenizer.model_max_length = int(cfg.tokenizer.max_length)

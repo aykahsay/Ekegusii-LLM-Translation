@@ -1,5 +1,5 @@
 model:
-  name_or_path: CohereForAI/aya-23-8B
+  name_or_path: CohereLabs/aya-23-8B
   torch_dtype: bfloat16
   use_fast_tokenizer: true
 qlora:

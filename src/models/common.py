@@ -30,6 +30,7 @@ from transformers import (
 from src.datasets.collator import CausalLMDataCollator
 from src.utils.config_dict import ConfigDict
 from src.utils.helpers import resolve_device
+from src.utils.hub_auth import raise_with_access_guidance
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ def load_adapter_for_inference(
 
     Args:
         base_model_id: HuggingFace Hub ID of the base model (e.g.
-            "CohereForAI/aya-23-8B").
+            "CohereLabs/aya-23-8B").
         adapter_path: Path to a saved PEFT adapter checkpoint directory
             (e.g. from `CheckpointManager.save`). If None, returns the
             unmodified base model (useful for zero-shot baseline E0).
@@ -65,18 +66,24 @@ def load_adapter_for_inference(
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
 
-    tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
-        adapter_path or base_model_id, padding_side="left"
-    )
+    try:
+        tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
+            adapter_path or base_model_id, padding_side="left"
+        )
+    except OSError as exc:
+        raise_with_access_guidance(exc, base_model_id)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    base_model = AutoModelForCausalLM.from_pretrained(
-        base_model_id,
-        quantization_config=bnb_config,
-        device_map="auto",
-        torch_dtype=torch.bfloat16,
-    )
+    try:
+        base_model = AutoModelForCausalLM.from_pretrained(
+            base_model_id,
+            quantization_config=bnb_config,
+            device_map="auto",
+            torch_dtype=torch.bfloat16,
+        )
+    except OSError as exc:
+        raise_with_access_guidance(exc, base_model_id)
 
     if adapter_path is None:
         logger.info(f"Loaded base model '{base_model_id}' with no adapter (zero-shot).")

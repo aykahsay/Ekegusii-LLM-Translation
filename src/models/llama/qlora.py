@@ -18,13 +18,15 @@ from transformers import (
     TrainingArguments,
 )
 
+from src.utils.hub_auth import raise_with_access_guidance
+
 logger = logging.getLogger(__name__)
 
 
 class LlamaQLoRATrainer:
     """Manages QLoRA fine-tuning for Meta Llama-3.1 8B Instruct."""
 
-    MODEL_ID = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
 
     def __init__(self, output_dir: str = "checkpoints/llama", r: int = 32, lora_alpha: int = 64) -> None:
         """Initialize trainer parameters.
@@ -54,21 +56,27 @@ class LlamaQLoRATrainer:
             bnb_4bit_compute_dtype=torch.bfloat16,
         )
 
-        tokenizer = AutoTokenizer.from_pretrained(
-            self.MODEL_ID,
-            padding_side="left",
-            trust_remote_code=False,
-        )
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(
+                self.MODEL_ID,
+                padding_side="left",
+                trust_remote_code=False,
+            )
+        except OSError as exc:
+            raise_with_access_guidance(exc, self.MODEL_ID)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
-        base_model = AutoModelForCausalLM.from_pretrained(
-            self.MODEL_ID,
-            quantization_config=bnb_config,
-            device_map="auto",
-            torch_dtype=torch.bfloat16,
-            trust_remote_code=False,
-        )
+        try:
+            base_model = AutoModelForCausalLM.from_pretrained(
+                self.MODEL_ID,
+                quantization_config=bnb_config,
+                device_map="auto",
+                torch_dtype=torch.bfloat16,
+                trust_remote_code=False,
+            )
+        except OSError as exc:
+            raise_with_access_guidance(exc, self.MODEL_ID)
 
         base_model = prepare_model_for_kbit_training(base_model)
 
