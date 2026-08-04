@@ -180,7 +180,10 @@ def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2Seq
     Returns:
         Seq2SeqTrainingArguments: Configured training arguments.
     """
-    ta = qlora_cfg.training_arguments
+    import importlib.util
+    has_tb = importlib.util.find_spec("tensorboard") is not None or importlib.util.find_spec("tensorboardX") is not None
+    report_to = ["tensorboard"] if has_tb else "none"
+
     return Seq2SeqTrainingArguments(
         output_dir=str(output_dir),
         per_device_train_batch_size=int(ta.per_device_train_batch_size),
@@ -198,7 +201,7 @@ def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2Seq
         save_steps=500,
         eval_strategy="steps",
         eval_steps=500,
-        report_to=["tensorboard"],
+        report_to=report_to,
     )
 
 
