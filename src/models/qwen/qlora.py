@@ -84,7 +84,14 @@ class QwenQLoRATrainer:
         except OSError as exc:
             raise_with_access_guidance(exc, self.MODEL_ID)
 
-        base_model = prepare_model_for_kbit_training(base_model)
+        import gc
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        base_model = prepare_model_for_kbit_training(base_model, use_gradient_checkpointing=True)
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         peft_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
