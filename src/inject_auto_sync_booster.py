@@ -2,8 +2,8 @@
 Permanent Auto-Sync Notebook Guard Script
 -------------------------------------------
 Adds an auto-sync check to Cell 1 of all research notebooks.
-It automatically purges cached `src` modules from `sys.modules`
-and guarantees the latest code is extracted from GitHub.
+If `configs/models/v2_mistral_earlystop_v5.tag` is missing (outdated clone on Kineses),
+it automatically downloads the latest zip from GitHub, extracts it, and purges sys.modules.
 """
 
 import json
@@ -12,6 +12,10 @@ import sys
 
 WORKSPACE_DIR = r"c:\Users\Admin\OneDrive - United States International University (USIU)\Documents\NLP\Multilogual_transaltion_nlp"
 NOTEBOOKS_DIR = os.path.join(WORKSPACE_DIR, "notebooks")
+
+TAG_FILE = os.path.join(WORKSPACE_DIR, "configs", "models", "v2_mistral_earlystop_v5.tag")
+with open(TAG_FILE, "w", encoding="utf-8") as f:
+    f.write("v5")
 
 AUTO_SYNC_BOOSTER = [
     "# ============================================================\n",
@@ -34,12 +38,12 @@ AUTO_SYNC_BOOSTER = [
     "    cwd = os.path.expanduser('~')\n",
     "    os.chdir(cwd)\n",
     "\n",
-    "home        = os.path.expanduser('~')\n",
-    "proj_dir    = os.path.join(home, 'Ekegusii-LLM-Translation-main')\n",
-    "mistral_cfg = os.path.join(proj_dir, 'configs', 'models', 'mistral_7b.yaml')\n",
+    "home       = os.path.expanduser('~')\n",
+    "proj_dir   = os.path.join(home, 'Ekegusii-LLM-Translation-main')\n",
+    "sync_tag   = os.path.join(proj_dir, 'configs', 'models', 'v2_mistral_earlystop_v5.tag')\n",
     "\n",
-    "# Auto-sync if folder is missing OR outdated\n",
-    "if not os.path.isfile(mistral_cfg):\n",
+    "# Auto-sync if folder is missing OR outdated (lacks v2_mistral_earlystop_v5.tag)\n",
+    "if not os.path.isfile(sync_tag):\n",
     "    print('🔄 Outdated or missing repository detected. Auto-syncing latest code from GitHub...')\n",
     "    zip_path = os.path.join(home, 'repo.zip')\n",
     "    urllib.request.urlretrieve('https://github.com/aykahsay/Ekegusii-LLM-Translation/archive/refs/heads/main.zip', zip_path)\n",
@@ -87,12 +91,12 @@ def update_notebook_booster(filepath):
 
 
 def main():
-    print("=== Injecting Permanent Auto-Sync Booster into Notebooks ===")
+    print("=== Injecting v5 Auto-Sync Booster into Notebooks ===")
     for fname in sorted(os.listdir(NOTEBOOKS_DIR)):
         if fname.endswith(".ipynb"):
             fpath = os.path.join(NOTEBOOKS_DIR, fname)
             update_notebook_booster(fpath)
-            print(f"  [MODULE PURGE BOOSTER ADDED] {fname}")
+            print(f"  [v5 AUTO-SYNC ADDED] {fname}")
 
 if __name__ == "__main__":
     main()
