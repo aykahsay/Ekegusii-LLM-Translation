@@ -180,8 +180,11 @@ def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2Seq
     Returns:
         Seq2SeqTrainingArguments: Configured training arguments.
     """
-    import importlib.util
-    has_tb = importlib.util.find_spec("tensorboard") is not None or importlib.util.find_spec("tensorboardX") is not None
+    try:
+        from transformers.integrations import is_tensorboard_available
+        has_tb = is_tensorboard_available()
+    except Exception:
+        has_tb = False
     report_to = ["tensorboard"] if has_tb else "none"
 
     return Seq2SeqTrainingArguments(
