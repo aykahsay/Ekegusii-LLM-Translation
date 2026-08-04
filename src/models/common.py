@@ -205,6 +205,9 @@ def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2Seq
         save_steps=500,
         eval_strategy="steps",
         eval_steps=500,
+        load_best_model_at_end=True,
+        metric_for_best_model="loss",
+        greater_is_better=False,
         report_to=report_to,
     )
 
