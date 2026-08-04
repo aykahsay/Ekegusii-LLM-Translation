@@ -79,7 +79,7 @@ class MistralQLoRATrainer:
                 self.MODEL_ID,
                 quantization_config=bnb_config,
                 device_map=device_target,
-                torch_dtype=torch.bfloat16,
+                dtype=torch.bfloat16,
                 trust_remote_code=False,
             )
         except OSError as exc:
