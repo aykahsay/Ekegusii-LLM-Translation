@@ -17,13 +17,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 from datasets import Dataset
-
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import DictConfig, OmegaConf
-
 from peft import PeftModel
 from transformers import (
     AutoModelForCausalLM,
@@ -35,6 +28,7 @@ from transformers import (
 )
 
 from src.datasets.collator import CausalLMDataCollator
+from src.utils.config_dict import ConfigDict
 from src.utils.helpers import resolve_device
 
 logger = logging.getLogger(__name__)
@@ -98,7 +92,7 @@ def generate_translations(
     model: Any,
     tokenizer: PreTrainedTokenizerBase,
     prompts: List[str],
-    generation_cfg: DictConfig,
+    generation_cfg: ConfigDict,
     batch_size: int = 8,
 ) -> List[str]:
     """Generate translations for a list of prompts using a configured decoding profile.
@@ -119,8 +113,7 @@ def generate_translations(
     """
     model.eval()
     device = next(model.parameters()).device
-    raw_kwargs = OmegaConf.to_container(generation_cfg, resolve=True)
-    generation_kwargs: Dict[str, Any] = raw_kwargs if isinstance(raw_kwargs, dict) else {}
+    generation_kwargs: Dict[str, Any] = generation_cfg.to_container()
 
     outputs: List[str] = []
     for i in range(0, len(prompts), batch_size):
@@ -168,7 +161,7 @@ def merge_and_save_adapter(model: Any, tokenizer: PreTrainedTokenizerBase, outpu
     return output_dir
 
 
-def build_training_arguments(qlora_cfg: DictConfig, output_dir: Path) -> Seq2SeqTrainingArguments:
+def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2SeqTrainingArguments:
     """Build `Seq2SeqTrainingArguments` from a merged QLoRA config.
 
     Args:
@@ -207,7 +200,7 @@ def run_qlora_training(
     tokenizer: PreTrainedTokenizerBase,
     train_dataset: Dataset,
     eval_dataset: Dataset,
-    qlora_cfg: DictConfig,
+    qlora_cfg: ConfigDict,
     output_dir: Path,
     early_stopping_patience: int = 3,
 ) -> Trainer:

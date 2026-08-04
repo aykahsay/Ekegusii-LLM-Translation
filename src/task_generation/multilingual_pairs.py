@@ -13,14 +13,9 @@ from typing import Dict
 
 import pandas as pd
 
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import DictConfig
-
 from src.master_corpus.scheduler import ResourceScheduler
 from src.task_generation.translation_pairs import extract_pairs
+from src.utils.config_dict import ConfigDict
 from src.utils.constants import LANGUAGE_CODES, TRANSLATION_DIRECTIONS
 
 logger = logging.getLogger(__name__)
@@ -34,7 +29,7 @@ def _direction_config_key(source_lang: str, target_lang: str) -> str:
 class MultilingualPairMixer:
     """Builds a single weighted-mixture pair dataset across all translation directions."""
 
-    def __init__(self, multilingual_cfg: DictConfig, seed: int = 42) -> None:
+    def __init__(self, multilingual_cfg: ConfigDict, seed: int = 42) -> None:
         """Initialize the mixer.
 
         Args:

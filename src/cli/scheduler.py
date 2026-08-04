@@ -10,15 +10,10 @@ before committing to a multi-hour training run.
 import logging
 from typing import Dict
 
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import OmegaConf
-
 from src.master_corpus.manager import MasterCorpusManager
 from src.master_corpus.scheduler import ResourceScheduler
 from src.task_generation.translation_pairs import direction_counts
+from src.utils.config_dict import load_yaml
 from src.utils.constants import CONFIGS_DIR
 
 logger = logging.getLogger(__name__)
@@ -48,7 +43,7 @@ def run_schedule_preview(batch_size: int = 32) -> Dict[str, int]:
         for src, tgt in [direction_label.split("->")]
     }
 
-    multilingual_cfg = OmegaConf.load(CONFIGS_DIR / "training" / "multilingual.yaml")
+    multilingual_cfg = load_yaml(CONFIGS_DIR / "training" / "multilingual.yaml")
     scheduler = ResourceScheduler(multilingual_cfg)
     quota = scheduler.build_mixed_batch_plan(counts_by_key, batch_size)
 

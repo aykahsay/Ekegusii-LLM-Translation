@@ -12,13 +12,8 @@ evaluation pipeline.
 import logging
 from typing import List, Tuple
 
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import DictConfig, OmegaConf
-
 from src.utils.config import load_prompt_templates as _load_templates
+from src.utils.config_dict import ConfigDict, load_yaml
 from src.utils.constants import CONFIGS_DIR, LANGUAGE_CODES
 
 logger = logging.getLogger(__name__)
@@ -65,7 +60,7 @@ def format_chat_messages(source_lang: str, target_lang: str, source_text: str) -
         List[dict]: [{"role": "system", "content": ...}, {"role": "user",
             "content": ...}], using `configs/prompts/translation.yaml`.
     """
-    cfg: DictConfig = OmegaConf.load(CONFIGS_DIR / "prompts" / "translation.yaml")  # type: ignore[assignment]
+    cfg: ConfigDict = load_yaml(CONFIGS_DIR / "prompts" / "translation.yaml")
     user_content = cfg["user_turn_template"].format(src_lang=source_lang, tgt_lang=target_lang, src=source_text)
     return [
         {"role": "system", "content": cfg["system_prompt"]},

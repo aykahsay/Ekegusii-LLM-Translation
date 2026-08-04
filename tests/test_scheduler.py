@@ -5,9 +5,8 @@ Unit Tests for Resource Scheduler
 
 import unittest
 
-from omegaconf import OmegaConf
-
 from src.master_corpus.scheduler import ResourceScheduler
+from src.utils.config_dict import ConfigDict
 
 
 class TestResourceScheduler(unittest.TestCase):
@@ -15,7 +14,7 @@ class TestResourceScheduler(unittest.TestCase):
 
     def setUp(self) -> None:
         """Set up a scheduler with known weights for deterministic assertions."""
-        cfg = OmegaConf.create(
+        cfg = ConfigDict(
             {
                 "direction_weights": {"eng_to_eke": 2.0, "swa_to_eke": 1.0},
                 "sampling_temperature": 1.0,

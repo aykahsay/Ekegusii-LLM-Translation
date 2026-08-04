@@ -16,11 +16,7 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import DictConfig
+from src.utils.config_dict import ConfigDict
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +24,7 @@ logger = logging.getLogger(__name__)
 class ResourceScheduler:
     """Builds a single weighted training mixture from multiple task pools."""
 
-    def __init__(self, multilingual_cfg: DictConfig, seed: int = 42) -> None:
+    def __init__(self, multilingual_cfg: ConfigDict, seed: int = 42) -> None:
         """Initialize the scheduler.
 
         Args:

@@ -14,16 +14,11 @@ from typing import Optional
 
 import pandas as pd
 
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import OmegaConf
-
 from src.experiments.mono import FullResourcesExperiment
 from src.master_corpus.manager import MasterCorpusManager
 from src.master_corpus.scheduler import ResourceScheduler
 from src.task_generation.lexical_tasks import LexicalTaskGenerator
+from src.utils.config_dict import load_yaml
 from src.utils.constants import CONFIGS_DIR
 
 logger = logging.getLogger(__name__)
@@ -55,7 +50,7 @@ class LexicalAugmentationExperiment(FullResourcesExperiment):
         sentence_tasks = super().build_training_tasks()[["prompt", "response"]]
         lexical_tasks = self.lexical_generator.generate_all_tasks()[["prompt", "response"]]
 
-        multilingual_cfg = OmegaConf.load(CONFIGS_DIR / "training" / "multilingual.yaml")
+        multilingual_cfg = load_yaml(CONFIGS_DIR / "training" / "multilingual.yaml")
         # This experiment IS the lexical-augmentation arm, so force it on
         # regardless of the shared config's default (which stays False for
         # E0-E5, which must NOT see lexical data).

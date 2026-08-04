@@ -13,13 +13,8 @@ from typing import List, Optional
 
 import pandas as pd
 
-from src.utils.bootstrap import ensure_package
-
-ensure_package("omegaconf", "omegaconf==2.3.0")
-ensure_package("hydra", "hydra-core==1.3.2")
-from omegaconf import DictConfig, OmegaConf
-
 from src.master_corpus.manager import MasterCorpusManager
+from src.utils.config_dict import ConfigDict, load_yaml
 from src.utils.constants import CONFIGS_DIR, LANGUAGE_CODES, SUPPORTED_LANGUAGES
 
 logger = logging.getLogger(__name__)
@@ -36,7 +31,7 @@ class LexicalTaskGenerator:
                 default-configured instance is created.
         """
         self.manager = manager or MasterCorpusManager()
-        self.templates: DictConfig = OmegaConf.load(CONFIGS_DIR / "prompts" / "lexical.yaml")  # type: ignore[assignment]
+        self.templates: ConfigDict = load_yaml(CONFIGS_DIR / "prompts" / "lexical.yaml")
 
     def generate_tasks_from_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Expand lexical corpus rows into "define_term" instruction tasks.
