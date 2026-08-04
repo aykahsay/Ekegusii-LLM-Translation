@@ -18,17 +18,11 @@ from typing import Any, Dict, List, Optional, Tuple
 import torch
 from datasets import Dataset
 
-try:
-    from omegaconf import DictConfig, OmegaConf
-except ImportError:
-    import subprocess as _subprocess
-    import sys as _sys
+from src.utils.bootstrap import ensure_package
 
-    _subprocess.run(
-        [_sys.executable, "-m", "pip", "install", "--quiet", "omegaconf==2.3.0", "hydra-core==1.3.2"],
-        check=False,
-    )
-    from omegaconf import DictConfig, OmegaConf
+ensure_package("omegaconf", "omegaconf==2.3.0")
+ensure_package("hydra", "hydra-core==1.3.2")
+from omegaconf import DictConfig, OmegaConf
 
 from peft import PeftModel
 from transformers import (

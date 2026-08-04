@@ -16,17 +16,11 @@ from typing import Dict
 import numpy as np
 import pandas as pd
 
-try:
-    from omegaconf import DictConfig
-except ImportError:
-    import subprocess as _subprocess
-    import sys as _sys
+from src.utils.bootstrap import ensure_package
 
-    _subprocess.run(
-        [_sys.executable, "-m", "pip", "install", "--quiet", "omegaconf==2.3.0", "hydra-core==1.3.2"],
-        check=False,
-    )
-    from omegaconf import DictConfig
+ensure_package("omegaconf", "omegaconf==2.3.0")
+ensure_package("hydra", "hydra-core==1.3.2")
+from omegaconf import DictConfig
 
 logger = logging.getLogger(__name__)
 
