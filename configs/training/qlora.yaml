@@ -25,3 +25,6 @@ training_arguments:
   learning_rate: 0.0002
   fp16: false
   bf16: true
+  load_best_model_at_end: true
+  metric_for_best_model: "loss"
+  greater_is_better: false
