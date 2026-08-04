@@ -19,7 +19,12 @@ This keeps configuration additive rather than duplicated across files.
 import logging
 from pathlib import Path
 
-from omegaconf import DictConfig, OmegaConf
+try:
+    from omegaconf import DictConfig, OmegaConf
+except ImportError:
+    import sys, subprocess
+    subprocess.run([sys.executable, "-m", "pip", "install", "--quiet", "omegaconf==2.3.0", "hydra-core==1.3.2"], check=False)
+    from omegaconf import DictConfig, OmegaConf
 
 from src.utils.constants import CONFIGS_DIR, SUPPORTED_MODELS
 
