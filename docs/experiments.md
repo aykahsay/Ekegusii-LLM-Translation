@@ -14,7 +14,7 @@
 | E7 | Curriculum Learning | E6 data, staged easy-to-hard | `src.experiments.curriculum.CurriculumLearningExperiment` |
 | E8 | Final Model | Whichever of E0-E7 scores highest | Selected by `AblationAggregator.select_final_model`, then merged for deployment |
 
-Each experiment trains BOTH Aya-23-8B and Llama-3.1-8B independently, so the
+Each experiment trains BOTH Qwen2.5-7B-Instruct and Llama-3.1-8B independently, so the
 ablation study answers two questions at once: which resource configuration
 helps, and whether the answer differs by base model.
 
@@ -29,8 +29,8 @@ contribute a valid pair. See the module docstring in
 ## Running an experiment
 
 ```bash
-python -m src.cli.main train E4_Trilingual --model-name aya
-python -m src.cli.main run-eval --model-name aya --adapter-path checkpoints/aya/E4_Trilingual/checkpoint-1500
+python -m src.cli.main train E4_Trilingual --model-name qwen
+python -m src.cli.main run-eval --model-name qwen --adapter-path checkpoints/qwen/E4_Trilingual/checkpoint-1500
 ```
 
 Or the full sweep: `bash scripts/run_ablation.sh`.

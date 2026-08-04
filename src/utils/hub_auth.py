@@ -1,15 +1,19 @@
 """
 HuggingFace Hub Gated-Repo Error Guidance
 ----------------------------------------------
-Aya-23-8B and Llama-3.1-8B-Instruct are both gated models: HuggingFace
-requires a logged-in account to have requested/accepted access on each
-model's page, AND the local environment to be authenticated (an `HF_TOKEN`
-env var or `huggingface-cli login`), before `from_pretrained()` will
-download anything. Neither of those two steps can be automated from code --
-this module exists only to turn the resulting `OSError`/`GatedRepoError`
-(which surfaces as a long, generic-looking traceback) into a short,
-actionable message pointing at exactly what to do, rather than requiring
-the user to read HuggingFace's internals to figure out what's wrong.
+Llama-3.1-8B-Instruct is a gated model: HuggingFace requires a logged-in
+account to have requested/accepted access on the model's page, AND the
+local environment to be authenticated (an `HF_TOKEN` env var or
+`huggingface-cli login`), before `from_pretrained()` will download
+anything. (Qwen2.5-7B-Instruct, the project's other base model, is fully
+open and never hits this path -- Aya-23-8B originally filled this role but
+was replaced specifically to avoid this friction; Llama's license terms
+still require it regardless.) Neither of Llama's two access steps can be
+automated from code -- this module exists only to turn the resulting
+`OSError`/`GatedRepoError` (which surfaces as a long, generic-looking
+traceback) into a short, actionable message pointing at exactly what to
+do, rather than requiring the user to read HuggingFace's internals to
+figure out what's wrong.
 """
 
 from typing import NoReturn
@@ -21,7 +25,7 @@ def raise_with_access_guidance(exc: Exception, model_id: str) -> NoReturn:
     Args:
         exc: The exception caught from a `from_pretrained()` call.
         model_id: The HuggingFace Hub repo ID that was being loaded (e.g.
-            "CohereLabs/aya-23-8B").
+            "meta-llama/Llama-3.1-8B-Instruct").
 
     Raises:
         OSError: Always -- either a rewritten, actionable version of `exc`

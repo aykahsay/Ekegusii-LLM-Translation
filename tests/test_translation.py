@@ -2,8 +2,8 @@
 Unit Tests for the Translation Data Pipeline
 --------------------------------------------------
 Tests prompt formatting and dataset tokenization/collation -- the parts of
-the translation pipeline that don't require GPU or gated Aya-23/Llama-3.1
-access. End-to-end generation (`translate_with_aya`/`translate_with_llama`)
+the translation pipeline that don't require GPU or gated Llama-3.1
+access. End-to-end generation (`translate_with_qwen`/`translate_with_llama`)
 is exercised on the A100 training/inference environment instead, not in
 unit tests.
 """

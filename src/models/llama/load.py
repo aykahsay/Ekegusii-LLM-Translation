@@ -2,7 +2,7 @@
 Llama-3.1 Inference Model Loader
 ------------------------------------
 Thin wrapper over `src.models.common.load_adapter_for_inference` bound to
-Llama-3.1-8B-Instruct, mirroring `src.models.aya.load`.
+Llama-3.1-8B-Instruct, mirroring `src.models.qwen.load`.
 """
 
 import logging

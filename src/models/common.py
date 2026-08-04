@@ -1,11 +1,11 @@
 """
-Shared Model Handling Logic (Aya + Llama)
+Shared Model Handling Logic (Qwen + Llama)
 ---------------------------------------------
-Aya-23-8B and Llama-3.1-8B are fine-tuned, checkpointed, evaluated, and
+Qwen2.5-7B-Instruct and Llama-3.1-8B are fine-tuned, checkpointed, evaluated, and
 deployed through an IDENTICAL QLoRA pipeline -- only the base model ID and
 per-model hyperparameters differ (see `configs/models/*.yaml`,
 `configs/training/*_qlora.yaml`). This module holds that shared logic once;
-`src/models/aya/{load,trainer,inference,save}.py` and
+`src/models/qwen/{load,trainer,inference,save}.py` and
 `src/models/llama/{...}.py` are thin wrappers that call into it with their
 own MODEL_ID, keeping the required per-model file layout without
 duplicating the underlying implementation four times over.
@@ -40,13 +40,13 @@ def load_adapter_for_inference(
 ) -> Tuple[Any, PreTrainedTokenizerBase]:
     """Load a base model (4-bit quantized) with an optional trained LoRA adapter attached.
 
-    Distinct from `AyaQLoRATrainer`/`LlamaQLoRATrainer.load_model_and_tokenizer`,
+    Distinct from `QwenQLoRATrainer`/`LlamaQLoRATrainer.load_model_and_tokenizer`,
     which always initializes a FRESH LoRA adapter for training -- this
     loads a PREVIOUSLY TRAINED adapter checkpoint for inference/evaluation.
 
     Args:
         base_model_id: HuggingFace Hub ID of the base model (e.g.
-            "CohereLabs/aya-23-8B").
+            "Qwen/Qwen2.5-7B-Instruct").
         adapter_path: Path to a saved PEFT adapter checkpoint directory
             (e.g. from `CheckpointManager.save`). If None, returns the
             unmodified base model (useful for zero-shot baseline E0).
@@ -215,7 +215,7 @@ def run_qlora_training(
 
     Args:
         model: A PEFT-wrapped model ready for training (see
-            `AyaQLoRATrainer`/`LlamaQLoRATrainer.load_model_and_tokenizer`).
+            `QwenQLoRATrainer`/`LlamaQLoRATrainer.load_model_and_tokenizer`).
         tokenizer: Tokenizer matching `model`.
         train_dataset: Tokenized training dataset (see `InstructionDatasetBuilder`).
         eval_dataset: Tokenized validation dataset.

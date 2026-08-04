@@ -1,6 +1,6 @@
 """
-Aya-23 Checkpoint & Deployment Saving
------------------------------------------
+Qwen2.5-7B-Instruct Checkpoint & Deployment Saving
+----------------------------------------------------------
 Saves training checkpoints (via `CheckpointManager`) and, for the final
 deployed model, merges the trained LoRA adapter into the base model
 weights (via `src.models.common.merge_and_save_adapter`) so serving does
@@ -19,7 +19,7 @@ from src.utils.checkpoint import CheckpointManager
 logger = logging.getLogger(__name__)
 
 
-def save_aya_checkpoint(
+def save_qwen_checkpoint(
     model: Any,
     tokenizer: PreTrainedTokenizerBase,
     checkpoint_dir: str,
@@ -28,13 +28,13 @@ def save_aya_checkpoint(
     metrics: Dict[str, float],
     is_best: bool = False,
 ) -> Path:
-    """Save a training checkpoint for Aya-23-8B.
+    """Save a training checkpoint for Qwen2.5-7B-Instruct.
 
     Args:
         model: PEFT-wrapped model to save (only the adapter is persisted).
         tokenizer: Tokenizer to save alongside the adapter.
         checkpoint_dir: Root checkpoint directory for this run (e.g.
-            `checkpoints/aya/E1_English_Ekegusii`).
+            `checkpoints/qwen/E1_English_Ekegusii`).
         step: Global training step.
         epoch: Fractional epoch.
         metrics: Validation metrics recorded at this step.
@@ -47,7 +47,7 @@ def save_aya_checkpoint(
     return manager.save(model, tokenizer, step, epoch, metrics, is_best)
 
 
-def save_aya_final_model(model: Any, tokenizer: PreTrainedTokenizerBase, output_dir: str = "models/aya_final") -> Path:
+def save_qwen_final_model(model: Any, tokenizer: PreTrainedTokenizerBase, output_dir: str = "models/qwen_final") -> Path:
     """Merge the trained adapter into the base model and save for deployment.
 
     Args:
@@ -59,5 +59,5 @@ def save_aya_final_model(model: Any, tokenizer: PreTrainedTokenizerBase, output_
         Path: `output_dir`, containing the standalone merged model.
     """
     result = merge_and_save_adapter(model, tokenizer, Path(output_dir))
-    logger.info(f"[Aya] Final deployable model saved to {result}.")
+    logger.info(f"[Qwen] Final deployable model saved to {result}.")
     return result

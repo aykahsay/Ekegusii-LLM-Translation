@@ -2,7 +2,7 @@
 Llama-3.1 Tokenizer Loader
 -----------------------------
 Loads the Meta Llama-3.1-8B-Instruct tokenizer configured per
-`configs/models/llama31_8b.yaml`, mirroring `src.tokenizer.aya` so both
+`configs/models/llama31_8b.yaml`, mirroring `src.tokenizer.qwen` so both
 models' tokenizers are loaded through an identical, config-driven code path.
 """
 

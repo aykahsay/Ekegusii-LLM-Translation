@@ -2,7 +2,7 @@
 # time. Distinct from configs/prompts/templates.yaml (raw completion-style
 # templates used by the batch InstructionTaskGenerator): this is the
 # multi-turn chat structure passed to `tokenizer.apply_chat_template()` for
-# Aya-23 / Llama-3.1-Instruct, both of which expect a system/user/assistant
+# Qwen2.5 / Llama-3.1-Instruct, both of which expect a system/user/assistant
 # turn list rather than a single flat string.
 
 system_prompt: >-

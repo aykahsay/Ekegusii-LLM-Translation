@@ -1,10 +1,13 @@
-# Cohere Aya 23 8B Model Specification Configuration
+# Qwen2.5-7B-Instruct Model Specification Configuration
+# Replaced Cohere Aya-23-8B: Aya required gated-repo access approval that
+# blocked iteration; Qwen2.5-7B-Instruct is fully open (Apache 2.0, no
+# authentication needed) and close in scale to Llama-3.1-8B.
 
 model:
-  name: "aya_8b"
-  hf_path: "CohereLabs/aya-23-8B"
-  architecture: "CohereForAI"
-  params: "8B"
+  name: "qwen_7b"
+  hf_path: "Qwen/Qwen2.5-7B-Instruct"
+  architecture: "Qwen2ForCausalLM"
+  params: "7B"
   torch_dtype: "bfloat16"
   use_fast_tokenizer: true
   trust_remote_code: false

@@ -13,7 +13,7 @@ Official open-source research repository for the ACL/EMNLP paper:
 
 ## 📌 Research Objective & Central Question
 
-Low-resource African language translation faces severe data scarcity and morphological complexity. This repository provides a **Resource-Aware Instruction-Tuning Translation Framework** that systematically evaluates how different linguistic data resources (monolingual, bilingual, trilingual, and dictionary lexicons) contribute to machine translation performance when instruction-tuning Large Language Models (**Cohere Aya 23 8B** and **Meta Llama 3.1 8B**) on **Ekegusii (Bantu, eke)**, **Kiswahili (swh)**, and **English (eng)** on an **NVIDIA A100 80GB GPU**.
+Low-resource African language translation faces severe data scarcity and morphological complexity. This repository provides a **Resource-Aware Instruction-Tuning Translation Framework** that systematically evaluates how different linguistic data resources (monolingual, bilingual, trilingual, and dictionary lexicons) contribute to machine translation performance when instruction-tuning Large Language Models (**Qwen2.5 7B Instruct** and **Meta Llama 3.1 8B**) on **Ekegusii (Bantu, eke)**, **Kiswahili (swh)**, and **English (eng)** on an **NVIDIA A100 80GB GPU**.
 
 > **Central Research Question**: *How can multilingual LLMs be effectively adapted for high-quality translation between Ekegusii, Kiswahili, and English using limited multilingual resources?*
 
@@ -46,7 +46,7 @@ Low-resource African language translation faces severe data scarcity and morphol
 Ekegusii-LLM-Translation/
 │
 ├── ⚙️ configs/                          # Hydra YAML Configurations
-│   ├── models/                          (aya_8b.yaml, llama31_8b.yaml, common.yaml)
+│   ├── models/                          (qwen_7b.yaml, llama31_8b.yaml, common.yaml)
 │   ├── training/                        (qlora.yaml, optimizer.yaml, scheduler.yaml, evaluation.yaml)
 │   ├── datasets/                        (master.yaml, monolingual.yaml, bilingual.yaml, trilingual.yaml, lexical.yaml)
 │   └── prompts/                         (translation.yaml, lexical.yaml, templates.yaml)
@@ -62,10 +62,10 @@ Ekegusii-LLM-Translation/
 │   ├── 01_master_corpus_analysis.ipynb  (01. Master Corpus & Domain Analysis)
 │   ├── 02_data_validation.ipynb        (02. Data Validation & Leakage Verification)
 │   ├── 03_resource_statistics.ipynb    (03. Resource Statistics & Coverage)
-│   ├── 04_tokenizer_analysis.ipynb     (04. Aya 23 vs Llama 3.1 Subword Fertility)
+│   ├── 04_tokenizer_analysis.ipynb     (04. Qwen2.5 vs Llama 3.1 Subword Fertility)
 │   ├── 05_instruction_generation.ipynb (05. 6-Way Multilingual Instruction Generator)
 │   ├── 06_dataset_scheduler.ipynb      (06. Dynamic Dataset Scheduler & Sampler)
-│   ├── 07_train_aya.ipynb              (07. Cohere Aya-23 8B QLoRA Fine-Tuning Engine)
+│   ├── 07_train_qwen.ipynb              (07. Qwen2.5 7B Instruct QLoRA Fine-Tuning Engine)
 │   ├── 08_train_llama.ipynb            (08. Meta Llama-3.1 8B QLoRA Fine-Tuning Engine)
 │   ├── 09_translation_evaluation.ipynb (09. SacreBLEU, chrF++, & COMET Evaluation)
 │   ├── 10_dictionary_analysis.ipynb    (10. Lexical Term Accuracy & Rare-Word Study)
@@ -76,10 +76,10 @@ Ekegusii-LLM-Translation/
 ├── 🐍 src/                               # Modular Python Codebase
 │   ├── master_corpus/                   (manager.py, loader.py, validator.py, cleaner.py, splitter.py, scheduler.py, curriculum.py, sampling.py, provenance.py, leakage.py, statistics.py)
 │   ├── preprocessing/                   (normalize.py, deduplicate.py, language_detection.py, filtering.py, export.py)
-│   ├── tokenizer/                       (aya.py, llama.py, metrics.py, fragmentation.py, vocabulary.py, rare_words.py, compare.py)
+│   ├── tokenizer/                       (qwen.py, llama.py, metrics.py, fragmentation.py, vocabulary.py, rare_words.py, compare.py)
 │   ├── task_generation/                 (translation_pairs.py, multilingual_pairs.py, instruction_generator.py, prompt_templates.py, lexical_tasks.py, augmentation.py)
 │   ├── datasets/                        (builder.py, dataloader.py, collator.py, sampler.py)
-│   ├── models/                          (aya/ and llama/ QLoRA trainers & inference)
+│   ├── models/                          (qwen/ and llama/ QLoRA trainers & inference)
 │   ├── evaluation/                      (bleu.py, sacrebleu.py, chrf.py, comet.py, lexical_accuracy.py, terminology.py, rare_word_accuracy.py, human_eval.py, significance.py, report.py)
 │   ├── experiments/                     (baseline.py, mono.py, bilingual.py, trilingual.py, lexical.py, curriculum.py, augmentation.py, ablation.py)
 │   ├── visualization/                   (tokenizer.py, learning_curves.py, heatmaps.py, metrics.py, resource_contribution.py, publication.py, dashboards.py)
@@ -87,7 +87,7 @@ Ekegusii-LLM-Translation/
 │   └── cli/                             (train.py, evaluate.py, translate.py, scheduler.py, generate_tasks.py, analyze.py)
 │
 ├── 🔬 experiments/                      # Experiment Output Logs & Checkpoints (E0 to E8)
-├── 💾 checkpoints/                      # Fine-Tuned Model Weights (Aya 8B & Llama 3.1 8B)
+├── 💾 checkpoints/                      # Fine-Tuned Model Weights (Qwen2.5 7B & Llama 3.1 8B)
 ├── 📈 outputs/                          # Predictions, Metrics, Tables, and Figures
 ├── 📜 scripts/                          # Shell scripts for 1-command pipeline execution
 ├── 🧪 tests/                            # Unit test suite for data loaders & metrics

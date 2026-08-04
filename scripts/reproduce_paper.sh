@@ -24,7 +24,7 @@ bash scripts/generate_tasks.sh
 echo "[3/5] Tokenizer fertility & vocabulary coverage analysis..."
 bash scripts/tokenizer_analysis.sh
 
-echo "[4/5] Running full E0-E8 resource ablation study (Aya + Llama)..."
+echo "[4/5] Running full E0-E8 resource ablation study (Qwen + Llama)..."
 bash scripts/run_ablation.sh
 
 echo "[5/5] Executing publication-figure notebooks..."

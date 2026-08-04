@@ -2,7 +2,7 @@
 Llama-3.1 Translation Inference
 ------------------------------------
 High-level "translate a batch of sentences" entry point for
-Llama-3.1-8B-Instruct, mirroring `src.models.aya.inference`.
+Llama-3.1-8B-Instruct, mirroring `src.models.qwen.inference`.
 """
 
 import logging

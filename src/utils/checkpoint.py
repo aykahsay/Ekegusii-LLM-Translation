@@ -4,7 +4,7 @@ Checkpoint Management for PEFT/QLoRA Training
 Saves and restores PEFT adapter checkpoints together with JSON training-state
 metadata (global step, epoch, best metric so far, optimizer/scheduler state
 paths), enabling resume-from-checkpoint and early-stopping decisions during
-long-running QLoRA fine-tuning of Aya-8B / Llama-3.1-8B on the A100.
+long-running QLoRA fine-tuning of Qwen2.5-7B / Llama-3.1-8B on the A100.
 
 The base model weights are never re-saved per checkpoint (only the small
 LoRA adapter + tokenizer + metadata are), keeping checkpoints on the order
@@ -35,7 +35,7 @@ class CheckpointManager:
 
         Args:
             checkpoint_dir: Root directory for this run's checkpoints, e.g.
-                `checkpoints/aya/E1_English_Ekegusii/`.
+                `checkpoints/qwen/E1_English_Ekegusii/`.
         """
         self.checkpoint_dir = ensure_dir(Path(checkpoint_dir))
 

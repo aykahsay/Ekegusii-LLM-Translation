@@ -2,7 +2,7 @@
 Llama-3.1 Checkpoint & Deployment Saving
 --------------------------------------------
 Saves training checkpoints and merges the trained LoRA adapter into the
-base model for deployment, mirroring `src.models.aya.save`.
+base model for deployment, mirroring `src.models.qwen.save`.
 """
 
 import logging

@@ -10,7 +10,7 @@ model's tokenizer was not trained on?
 ## Approach: controlled resource ablation
 
 Rather than fine-tuning once and reporting a single number, the project trains
-the SAME two base models (Aya-23-8B, Llama-3.1-8B) under nine progressively
+the SAME two base models (Qwen2.5-7B-Instruct, Llama-3.1-8B) under nine progressively
 richer resource configurations (E0-E8, see `docs/experiments.md`), holding
 everything else constant: QLoRA hyperparameters (`configs/training/*_qlora.yaml`),
 random seed (`src.utils.seed.set_seed`), and -- critically -- the evaluation
@@ -26,11 +26,11 @@ confounds like a different test set or different training length.
 targeting all attention/MLP projection matrices) via `peft`. This keeps
 trainable parameters to a small fraction of the 8B base model, making it
 feasible to train nine configurations x two models within an A100's memory
-and time budget. See `src/models/aya/qlora.py` / `src/models/llama/qlora.py`.
+and time budget. See `src/models/qwen/qlora.py` / `src/models/llama/qlora.py`.
 
 ## Why two base models
 
-Aya-23-8B is explicitly multilingual-pretrained (Cohere's own claim covers
+Qwen2.5-7B-Instruct is explicitly multilingual-pretrained (Alibaba's own claim covers
 23 languages, none of which is Ekegusii); Llama-3.1-8B is English-centric
 with broader general capability. Comparing them under identical resource
 conditions tests whether general multilingual pretraining transfers better

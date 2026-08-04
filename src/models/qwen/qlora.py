@@ -1,8 +1,12 @@
 """
-Cohere Aya 23 8B QLoRA Fine-Tuning Module
-------------------------------------------
+Qwen2.5-7B-Instruct QLoRA Fine-Tuning Module
+-------------------------------------------------
 Handles BitsAndBytes 4-bit NormalFloat quantization, PEFT LoRA configuration,
-and SFTTrainer setup for Cohere Aya-23 8B model fine-tuning on NVIDIA A100 GPU.
+and SFTTrainer setup for Qwen2.5-7B-Instruct model fine-tuning on NVIDIA A100
+GPU. Replaced Cohere Aya-23-8B in this project: Aya required a gated-repo
+access request that blocked iteration; Qwen2.5-7B-Instruct is fully open
+(Apache 2.0, no authentication needed) and close in scale to Llama-3.1-8B,
+so the E0-E8 comparison stays meaningful without the access friction.
 """
 
 import logging
@@ -24,12 +28,12 @@ from src.utils.hub_auth import raise_with_access_guidance
 logger = logging.getLogger(__name__)
 
 
-class AyaQLoRATrainer:
-    """Manages QLoRA fine-tuning for Cohere Aya-23 8B."""
+class QwenQLoRATrainer:
+    """Manages QLoRA fine-tuning for Qwen2.5-7B-Instruct."""
 
-    MODEL_ID = "CohereLabs/aya-23-8B"
+    MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 
-    def __init__(self, output_dir: str = "checkpoints/aya", r: int = 32, lora_alpha: int = 64) -> None:
+    def __init__(self, output_dir: str = "checkpoints/qwen", r: int = 32, lora_alpha: int = 64) -> None:
         """Initialize trainer parameters.
 
         Args:

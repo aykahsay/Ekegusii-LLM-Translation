@@ -8,10 +8,10 @@ data/master_corpus/  The frozen master sentence/lexical corpora + splits
 src/
   master_corpus/     Loading, validation, cleaning, splitting, statistics, leakage auditing, scheduling
   preprocessing/      Per-cell text normalization, dedup, language ID, filtering, export
-  tokenizer/          Aya/Llama tokenizer loaders + fertility/vocabulary/rare-word analysis
+  tokenizer/          Qwen/Llama tokenizer loaders + fertility/vocabulary/rare-word analysis
   task_generation/    Instruction-task construction (sentence-level, lexical, multilingual-mixed)
   datasets/           Tokenization -> HF Dataset, collation, weighted sampling, DataLoader factory
-  models/             QLoRA model loading/training/inference/saving (Aya + Llama)
+  models/             QLoRA model loading/training/inference/saving (Qwen + Llama)
   evaluation/         SacreBLEU, chrF, COMET, lexical/rare-word/terminology accuracy, significance, reports
   experiments/        E0-E8 experiment definitions + ablation aggregation
   visualization/      Publication-quality matplotlib figures
@@ -33,14 +33,14 @@ configs/training/qlora.yaml -> configs/training/{model}_8b_qlora.yaml
 ```
 
 Later layers override earlier ones key-for-key. A per-model file only needs to
-specify what differs from the shared default -- this is why `configs/models/aya_8b.yaml`
+specify what differs from the shared default -- this is why `configs/models/qwen_7b.yaml`
 doesn't repeat `hardware`/`seed`/`caching` settings that live in `common.yaml`.
 
 ## Design principle: one shared implementation per cross-cutting concern
 
-Aya-23-8B and Llama-3.1-8B are trained, checkpointed, and evaluated through an
+Qwen2.5-7B-Instruct and Llama-3.1-8B are trained, checkpointed, and evaluated through an
 **identical** QLoRA pipeline -- only the base model ID and hyperparameters differ.
-`src/models/common.py` holds that shared logic once; `src/models/aya/*.py` and
+`src/models/common.py` holds that shared logic once; `src/models/qwen/*.py` and
 `src/models/llama/*.py` are thin wrappers passing their own `MODEL_ID`. The same
 pattern applies to `src/experiments/base.py` (shared experiment scaffold) and
 `src/visualization/palette.py` (shared color system).

@@ -1,10 +1,10 @@
 """
-Aya-23 Tokenizer Loader
---------------------------
-Loads the Cohere Aya-23-8B tokenizer configured per `configs/models/aya_8b.yaml`
-(padding side, truncation side, max length), for use by tokenizer-analysis
-notebooks and the training/inference pipeline alike so both always load the
-tokenizer identically configured.
+Qwen2.5 Tokenizer Loader
+----------------------------
+Loads the Qwen2.5-7B-Instruct tokenizer configured per
+`configs/models/qwen_7b.yaml` (padding side, truncation side, max length),
+for use by tokenizer-analysis notebooks and the training/inference pipeline
+alike so both always load the tokenizer identically configured.
 """
 
 import logging
@@ -17,19 +17,19 @@ from src.utils.hub_auth import raise_with_access_guidance
 logger = logging.getLogger(__name__)
 
 
-def load_aya_tokenizer() -> PreTrainedTokenizerBase:
-    """Load the Aya-23-8B tokenizer with project-standard configuration.
+def load_qwen_tokenizer() -> PreTrainedTokenizerBase:
+    """Load the Qwen2.5-7B-Instruct tokenizer with project-standard configuration.
 
     Returns:
         PreTrainedTokenizerBase: Configured tokenizer with `padding_side`,
             `truncation_side`, and `model_max_length` set from
-            `configs/models/aya_8b.yaml`.
+            `configs/models/qwen_7b.yaml`.
 
     Raises:
         OSError: If the model repository cannot be reached/downloaded
-            (e.g. no internet access or gated-repo access not granted).
+            (e.g. no internet access).
     """
-    cfg = load_model_config("aya")
+    cfg = load_model_config("qwen")
 
     try:
         tokenizer: PreTrainedTokenizerBase = AutoTokenizer.from_pretrained(
@@ -45,7 +45,7 @@ def load_aya_tokenizer() -> PreTrainedTokenizerBase:
 
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-        logger.info("Aya tokenizer had no pad_token; defaulted to eos_token.")
+        logger.info("Qwen tokenizer had no pad_token; defaulted to eos_token.")
 
-    logger.info(f"Loaded Aya-23 tokenizer from '{cfg.model.hf_path}' (vocab_size={len(tokenizer):,}).")
+    logger.info(f"Loaded Qwen2.5 tokenizer from '{cfg.model.hf_path}' (vocab_size={len(tokenizer):,}).")
     return tokenizer

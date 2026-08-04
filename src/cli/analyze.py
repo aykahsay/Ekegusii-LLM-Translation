@@ -16,11 +16,11 @@ from src.experiments.ablation import AblationAggregator
 logger = logging.getLogger(__name__)
 
 
-def run_analyze(model_key: str = "aya") -> Dict[str, Any]:
+def run_analyze(model_key: str = "qwen") -> Dict[str, Any]:
     """Build the current attribution report and final-model recommendation.
 
     Args:
-        model_key: Which model's results to analyze ("aya" or "llama").
+        model_key: Which model's results to analyze ("qwen" or "llama").
 
     Returns:
         Dict[str, Any]: Keys "attribution_table" (pd.DataFrame) and

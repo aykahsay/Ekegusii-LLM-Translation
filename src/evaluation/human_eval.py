@@ -40,7 +40,7 @@ class HumanEvalTemplateBuilder:
                 ideally "Domain"/"concept_id" for stratified sampling and
                 traceability).
             translations_by_model: Mapping of model/experiment label (e.g.
-                "aya_E4_Trilingual") to a list of translations, ALIGNED
+                "qwen_E4_Trilingual") to a list of translations, ALIGNED
                 ROW-FOR-ROW with `source_df` (same order, same length).
             source_col: Column in `source_df` holding the source sentence.
             n_sentences: Number of sentences to sample for evaluation (the

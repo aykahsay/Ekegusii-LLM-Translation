@@ -56,12 +56,12 @@ class AblationAggregator:
                 logger.warning(f"No results.json found for {exp_dir.name}; skipping.")
         return results
 
-    def build_attribution_report(self, model_key: str = "aya"):
+    def build_attribution_report(self, model_key: str = "qwen"):
         """Build the E0-E8 attribution matrix from saved results for one model.
 
         Args:
             model_key: Which model's results to extract from each
-                experiment's results dict ("aya" or "llama").
+                experiment's results dict ("qwen" or "llama").
 
         Returns:
             pd.DataFrame: Output of `ResourceAttributionAnalyzer.generate_full_attribution_report`.
@@ -104,11 +104,11 @@ class AblationAggregator:
             results.append(result)
         return results
 
-    def select_final_model(self, model_key: str = "aya", metric: str = "sacrebleu_score") -> Optional[str]:
+    def select_final_model(self, model_key: str = "qwen", metric: str = "sacrebleu_score") -> Optional[str]:
         """Determine which E0-E7 experiment should become E8 (Final Model).
 
         Args:
-            model_key: Which model's results to compare ("aya" or "llama").
+            model_key: Which model's results to compare ("qwen" or "llama").
             metric: Metric key to rank experiments by (higher is better).
 
         Returns:

@@ -13,12 +13,12 @@ from typing import Any, Dict, Optional
 
 from src.experiments.base import BaseExperiment
 from src.master_corpus.manager import MasterCorpusManager
-from src.models.aya.inference import translate_with_aya
 from src.models.llama.inference import translate_with_llama
+from src.models.qwen.inference import translate_with_qwen
 
 logger = logging.getLogger(__name__)
 
-_INFERENCE_FN = {"aya": translate_with_aya, "llama": translate_with_llama}
+_INFERENCE_FN = {"qwen": translate_with_qwen, "llama": translate_with_llama}
 
 
 def run_evaluate(
@@ -30,7 +30,7 @@ def run_evaluate(
     """Run inference + automatic-metric evaluation for one model/direction.
 
     Args:
-        model_name: "aya" or "llama".
+        model_name: "qwen" or "llama".
         source_lang: Source language for the test direction.
         target_lang: Target language for the test direction.
         adapter_path: Optional trained LoRA adapter checkpoint path. If
@@ -41,10 +41,10 @@ def run_evaluate(
             `BaseExperiment.evaluate_predictions`).
 
     Raises:
-        ValueError: If `model_name` is not "aya" or "llama".
+        ValueError: If `model_name` is not "qwen" or "llama".
     """
     if model_name not in _INFERENCE_FN:
-        raise ValueError(f"model_name must be 'aya' or 'llama', got '{model_name}'.")
+        raise ValueError(f"model_name must be 'qwen' or 'llama', got '{model_name}'.")
 
     manager = MasterCorpusManager()
 

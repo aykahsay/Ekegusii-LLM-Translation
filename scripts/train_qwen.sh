@@ -1,8 +1,8 @@
 #!/bin/bash
 # ==============================================================================
-# Aya-23-8B QLoRA Training: Experiments E1-E7
-# Trains Aya on each resource-controlled experiment configuration in turn.
-# Checkpoints land under checkpoints/aya/{EXPERIMENT_ID}/.
+# Qwen2.5-7B-Instruct QLoRA Training: Experiments E1-E7
+# Trains Qwen on each resource-controlled experiment configuration in turn.
+# Checkpoints land under checkpoints/qwen/{EXPERIMENT_ID}/.
 # Requires an NVIDIA A100 (or equivalent) GPU with bitsandbytes 4-bit support.
 # ==============================================================================
 
@@ -19,16 +19,16 @@ EXPERIMENTS=(
 )
 
 echo "======================================================================"
-echo "Training Aya-23-8B: Experiments E1-E7"
+echo "Training Qwen2.5-7B-Instruct: Experiments E1-E7"
 echo "======================================================================"
 
 for experiment_id in "${EXPERIMENTS[@]}"; do
     echo "----------------------------------------------------------------------"
-    echo "Training aya on ${experiment_id}..."
+    echo "Training qwen on ${experiment_id}..."
     echo "----------------------------------------------------------------------"
-    python -m src.cli.main train "${experiment_id}" --model-name aya
+    python -m src.cli.main train "${experiment_id}" --model-name qwen
 done
 
 echo "======================================================================"
-echo "[SUCCESS] Aya-23-8B training complete for all experiments."
+echo "[SUCCESS] Qwen2.5-7B-Instruct training complete for all experiments."
 echo "======================================================================"

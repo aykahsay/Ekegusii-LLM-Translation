@@ -100,12 +100,12 @@ EXPERIMENT_IDS = (
 )
 
 # --- Models -------------------------------------------------------------------
-MODEL_AYA = "aya"
+MODEL_QWEN = "qwen"
 MODEL_LLAMA = "llama"
-SUPPORTED_MODELS = (MODEL_AYA, MODEL_LLAMA)
+SUPPORTED_MODELS = (MODEL_QWEN, MODEL_LLAMA)
 
 MODEL_HF_PATHS = {
-    MODEL_AYA: "CohereLabs/aya-23-8B",
+    MODEL_QWEN: "Qwen/Qwen2.5-7B-Instruct",
     MODEL_LLAMA: "meta-llama/Llama-3.1-8B-Instruct",
 }
 

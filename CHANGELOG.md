@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Leak-Proof Splits (`data/master_corpus/splits/`)**: Enforced 80% Train (39,421 concepts), 10% Validation (4,928 concepts), and 10% Test (4,928 concepts) splits with 0% data leakage guarantee.
 - **Master Corpus Manager (`src/master_corpus/`)**: Python API (`manager.py`, `integrity.py`, `leakage.py`) providing zero-leakage validation and dataset loader interfaces.
 - **6-Way Instruction Task Generator (`src/task_generation/`)**: Converts 49,277 concepts into 234,650 bidirectional translation instruction tasks (`ENG ↔ EKE`, `SWA ↔ EKE`, `ENG ↔ SWA`).
-- **Tokenizer Fertility Analyzer (`src/tokenizer/`)**: Computes subword fragmentation rates, vocabulary coverage, and rare-word fertility for Cohere Aya-23 8B and Meta Llama-3.1 8B.
+- **Tokenizer Fertility Analyzer (`src/tokenizer/`)**: Computes subword fragmentation rates, vocabulary coverage, and rare-word fertility for Qwen2.5-7B-Instruct and Meta Llama-3.1 8B.
 - **QLoRA Fine-Tuning Engine (`src/models/`)**: Production training code using PEFT, Accelerate, and TRL with 4-bit quantization on NVIDIA A100 80GB GPU.
 - **Multilingual MT Evaluation Suite (`src/evaluation/`)**: Automated evaluation of SacreBLEU, chrF++, Unbabel-COMET, exact dictionary accuracy, and morphological stem coverage.
 - **Resource Attribution Matrix (`src/experiments/`)**: Systematic experiment execution suite evaluating Experiments E0 through E8 for hypothesis testing.

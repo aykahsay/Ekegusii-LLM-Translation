@@ -2,7 +2,7 @@
 Llama-3.1 Training Pipeline
 -------------------------------
 Wires together `LlamaQLoRATrainer.load_model_and_tokenizer` with
-`src.models.common.run_qlora_training`, mirroring `src.models.aya.trainer`.
+`src.models.common.run_qlora_training`, mirroring `src.models.qwen.trainer`.
 """
 
 import logging

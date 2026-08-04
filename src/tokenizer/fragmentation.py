@@ -28,7 +28,7 @@ class FragmentationAnalyzer:
         """Initialize with a HuggingFace tokenizer to analyze.
 
         Args:
-            tokenizer: Tokenizer under analysis (e.g. Aya-23 or Llama-3.1).
+            tokenizer: Tokenizer under analysis (e.g. Qwen2.5 or Llama-3.1).
         """
         self.metrics = TokenizerMetrics(tokenizer)
 

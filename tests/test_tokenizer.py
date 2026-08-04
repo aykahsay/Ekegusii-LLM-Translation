@@ -2,7 +2,7 @@
 Unit Tests for Tokenizer Fertility & Fragmentation Analyzers
 -----------------------------------------------------------------
 Uses `bert-base-multilingual-cased` (small, ungated, always downloadable)
-as a stand-in tokenizer rather than Aya-23/Llama-3.1 -- those require
+as a stand-in tokenizer rather than Qwen2.5/Llama-3.1 -- those require
 gated Hub access and 8B-parameter downloads, which unit tests must not
 depend on. The metrics logic under test is tokenizer-agnostic.
 """
