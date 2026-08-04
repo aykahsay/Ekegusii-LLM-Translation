@@ -242,6 +242,9 @@ def run_qlora_training(
     from transformers import EarlyStoppingCallback
 
     training_args = build_training_arguments(qlora_cfg, output_dir)
+    training_args.load_best_model_at_end = True
+    training_args.metric_for_best_model = "loss"
+    training_args.greater_is_better = False
     collator = CausalLMDataCollator(tokenizer=tokenizer)
 
     trainer = Trainer(
