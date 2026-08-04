@@ -10,7 +10,17 @@ before committing to a multi-hour training run.
 import logging
 from typing import Dict
 
-from omegaconf import OmegaConf
+try:
+    from omegaconf import OmegaConf
+except ImportError:
+    import subprocess as _subprocess
+    import sys as _sys
+
+    _subprocess.run(
+        [_sys.executable, "-m", "pip", "install", "--quiet", "omegaconf==2.3.0", "hydra-core==1.3.2"],
+        check=False,
+    )
+    from omegaconf import OmegaConf
 
 from src.master_corpus.manager import MasterCorpusManager
 from src.master_corpus.scheduler import ResourceScheduler

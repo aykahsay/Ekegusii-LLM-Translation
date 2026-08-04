@@ -12,7 +12,17 @@ evaluation pipeline.
 import logging
 from typing import List, Tuple
 
-from omegaconf import DictConfig, OmegaConf
+try:
+    from omegaconf import DictConfig, OmegaConf
+except ImportError:
+    import subprocess as _subprocess
+    import sys as _sys
+
+    _subprocess.run(
+        [_sys.executable, "-m", "pip", "install", "--quiet", "omegaconf==2.3.0", "hydra-core==1.3.2"],
+        check=False,
+    )
+    from omegaconf import DictConfig, OmegaConf
 
 from src.utils.config import load_prompt_templates as _load_templates
 from src.utils.constants import CONFIGS_DIR, LANGUAGE_CODES
