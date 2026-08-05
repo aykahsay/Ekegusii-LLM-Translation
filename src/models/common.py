@@ -285,8 +285,19 @@ def run_qlora_training(
         df.to_csv(csv1, index=False)
         df.to_csv(csv2, index=False)
         logger.info(f"📊 Auto-saved training loss CSV to {csv1} and {csv2}")
+
+        # Auto-commit & push loss CSV to GitHub
+        try:
+            import subprocess
+            subprocess.run(["git", "add", "-f", csv1, csv2], check=False)
+            subprocess.run(["git", "commit", "-m", f"Auto-save loss curve CSV for {model_name}/{exp_name}"], check=False)
+            subprocess.run(["git", "push", "origin", "main"], check=False)
+            logger.info(f"🚀 Automatically pushed {csv1} and {csv2} to GitHub!")
+        except Exception as push_err:
+            logger.warning(f"Git auto-push notice: {push_err}")
     except Exception as exc:
         logger.warning(f"Could not auto-save loss CSV: {exc}")
 
     return trainer
+
 
