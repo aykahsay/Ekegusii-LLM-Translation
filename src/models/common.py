@@ -258,4 +258,35 @@ def run_qlora_training(
 
     logger.info(f"Starting QLoRA training -> {output_dir} (device={resolve_device()}).")
     trainer.train()
+
+    # Automatically export Step, Training Loss, Validation Loss CSV
+    try:
+        import pandas as pd, os
+        history = trainer.state.log_history
+        step_map = {}
+        for entry in history:
+            step = entry.get("step")
+            if step is not None:
+                if step not in step_map:
+                    step_map[step] = {"Step": step, "Training_Loss": None, "Validation_Loss": None}
+                if "loss" in entry:
+                    step_map[step]["Training_Loss"] = entry["loss"]
+                if "eval_loss" in entry:
+                    step_map[step]["Validation_Loss"] = entry["eval_loss"]
+
+        records = [v for v in step_map.values() if v["Training_Loss"] is not None or v["Validation_Loss"] is not None]
+        df = pd.DataFrame(records)
+        exp_name = output_dir.name
+        model_name = output_dir.parent.name
+        os.makedirs("data/results", exist_ok=True)
+        os.makedirs("outputs/training_logs", exist_ok=True)
+        csv1 = f"data/results/{model_name}_{exp_name}_loss.csv"
+        csv2 = f"outputs/training_logs/{model_name}_{exp_name}_loss.csv"
+        df.to_csv(csv1, index=False)
+        df.to_csv(csv2, index=False)
+        logger.info(f"📊 Auto-saved training loss CSV to {csv1} and {csv2}")
+    except Exception as exc:
+        logger.warning(f"Could not auto-save loss CSV: {exc}")
+
     return trainer
+
