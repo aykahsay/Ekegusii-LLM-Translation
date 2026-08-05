@@ -274,14 +274,20 @@ def run_qlora_training(
                 if "eval_loss" in entry:
                     step_map[step]["Validation_Loss"] = entry["eval_loss"]
 
-        records = [v for v in step_map.values() if v["Training_Loss"] is not None or v["Validation_Loss"] is not None]
+        exp_short = exp_name.split("_")[0] if "_" in exp_name else exp_name
+        records = []
+        for step, vals in sorted(step_map.items()):
+            if vals["Training_Loss"] is not None or vals["Validation_Loss"] is not None:
+                records.append({
+                    "step": step,
+                    "train_loss": vals["Training_Loss"],
+                    "val_loss": vals["Validation_Loss"]
+                })
         df = pd.DataFrame(records)
-        exp_name = output_dir.name
-        model_name = output_dir.parent.name
         os.makedirs("data/results", exist_ok=True)
         os.makedirs("outputs/training_logs", exist_ok=True)
-        csv1 = f"data/results/{model_name}_{exp_name}_loss.csv"
-        csv2 = f"outputs/training_logs/{model_name}_{exp_name}_loss.csv"
+        csv1 = f"data/results/{exp_short}_loss.csv"
+        csv2 = f"outputs/training_logs/{exp_short}_loss.csv"
         df.to_csv(csv1, index=False)
         df.to_csv(csv2, index=False)
         logger.info(f"📊 Auto-saved training loss CSV to {csv1} and {csv2}")
@@ -290,11 +296,12 @@ def run_qlora_training(
         try:
             import subprocess
             subprocess.run(["git", "add", "-f", csv1, csv2], check=False)
-            subprocess.run(["git", "commit", "-m", f"Auto-save loss curve CSV for {model_name}/{exp_name}"], check=False)
+            subprocess.run(["git", "commit", "-m", f"Auto-save loss curve CSV for {exp_short}"], check=False)
             subprocess.run(["git", "push", "origin", "main"], check=False)
             logger.info(f"🚀 Automatically pushed {csv1} and {csv2} to GitHub!")
         except Exception as push_err:
             logger.warning(f"Git auto-push notice: {push_err}")
+
     except Exception as exc:
         logger.warning(f"Could not auto-save loss CSV: {exc}")
 
