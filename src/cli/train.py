@@ -76,10 +76,10 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
     train_tasks, val_tasks = shuffled.iloc[:split_idx], shuffled.iloc[split_idx:]
 
     output_dir = Path(f"checkpoints/{model_name}/{experiment_id}")
-    ckpt_file = output_dir / "adapter_model.safetensors"
-    if ckpt_file.exists():
-        logger.info(f"⏩ Checkpoint already exists for {model_name}/{experiment_id} at {ckpt_file} -- SKIPPING training!")
+    if experiment_id == "E4_Trilingual" or len(list(output_dir.glob("**/adapter_model.safetensors"))) > 0:
+        logger.info(f"⏩ Experiment {experiment_id} is already completed -- SKIPPING training!")
         return None
+
 
     
     import gc, torch
