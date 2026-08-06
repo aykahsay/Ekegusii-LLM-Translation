@@ -33,11 +33,11 @@ TRAINABLE_EXPERIMENTS: Dict[str, Callable[[], BaseExperiment]] = {
     "E1_English_Ekegusii": lambda: BilingualExperiment("eng_eke"),
     "E2_Swahili_Ekegusii": lambda: BilingualExperiment("swa_eke"),
     "E3_Bilingual": lambda: BilingualExperiment("combined"),
-    "E4_Trilingual": TrilingualExperiment,
     "E5_Full_Resources": FullResourcesExperiment,
     "E6_Lexical_Augmentation": LexicalAugmentationExperiment,
     "E7_Curriculum_Learning": CurriculumLearningExperiment,
 }
+
 
 _QLORA_TRAINERS = {"qwen": QwenQLoRATrainer, "mistral": MistralQLoRATrainer}
 
