@@ -67,6 +67,12 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
     if model_name not in _QLORA_TRAINERS:
         raise ValueError(f"model_name must be 'qwen' or 'mistral', got '{model_name}'.")
 
+    output_dir = Path(f"checkpoints/{model_name}/{experiment_id}")
+    if experiment_id == "E4_Trilingual" or len(list(output_dir.glob("**/adapter_model.safetensors"))) > 0:
+        logger.info(f"⏩ Experiment {experiment_id} is already completed -- SKIPPING training!")
+        print(f"⏩ Experiment {experiment_id} is already completed -- SKIPPING training!")
+        return None
+
     set_seed(42)
     experiment = TRAINABLE_EXPERIMENTS[experiment_id]()
     tasks_df = experiment.build_training_tasks()
@@ -75,10 +81,6 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
     shuffled = tasks_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
     train_tasks, val_tasks = shuffled.iloc[:split_idx], shuffled.iloc[split_idx:]
 
-    output_dir = Path(f"checkpoints/{model_name}/{experiment_id}")
-    if experiment_id == "E4_Trilingual" or len(list(output_dir.glob("**/adapter_model.safetensors"))) > 0:
-        logger.info(f"⏩ Experiment {experiment_id} is already completed -- SKIPPING training!")
-        return None
 
 
     
