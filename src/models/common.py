@@ -203,6 +203,7 @@ def build_training_arguments(qlora_cfg: ConfigDict, output_dir: Path) -> Seq2Seq
         logging_steps=10,
         save_strategy="steps",
         save_steps=500,
+        save_total_limit=2,
         eval_strategy="steps",
         eval_steps=500,
         load_best_model_at_end=True,
@@ -256,12 +257,23 @@ def run_qlora_training(
         callbacks=[EarlyStoppingCallback(early_stopping_patience=early_stopping_patience)],
     )
 
-    logger.info(f"Starting QLoRA training -> {output_dir} (device={resolve_device()}).")
-    trainer.train()
+    last_checkpoint = None
+    if output_dir.exists():
+        checkpoints = [d for d in output_dir.iterdir() if d.is_dir() and d.name.startswith("checkpoint-")]
+        if checkpoints:
+            checkpoints.sort(key=lambda x: int(x.name.split("-")[-1]))
+            last_checkpoint = str(checkpoints[-1])
 
-    # Automatically export Step, Training Loss, Validation Loss CSV
+    if last_checkpoint:
+        logger.info(f"Resuming QLoRA training from checkpoint: {last_checkpoint} (device={resolve_device()}).")
+        trainer.train(resume_from_checkpoint=last_checkpoint)
+    else:
+        logger.info(f"Starting fresh QLoRA training -> {output_dir} (device={resolve_device()}).")
+        trainer.train()
+
+    # Automatically export Step, Training Loss, Validation Loss CSV & Loss Plots
     try:
-        import pandas as pd, os
+        import pandas as pd, os, matplotlib.pyplot as plt
         history = trainer.state.log_history
         step_map = {}
         for entry in history:
@@ -286,24 +298,82 @@ def run_qlora_training(
         df = pd.DataFrame(records)
         os.makedirs("data/results", exist_ok=True)
         os.makedirs("outputs/training_logs", exist_ok=True)
+        os.makedirs("outputs/figures", exist_ok=True)
+        os.makedirs("paper/figures", exist_ok=True)
+
         csv1 = f"data/results/{exp_short}_loss.csv"
         csv2 = f"outputs/training_logs/{exp_short}_loss.csv"
         df.to_csv(csv1, index=False)
         df.to_csv(csv2, index=False)
         logger.info(f"📊 Auto-saved training loss CSV to {csv1} and {csv2}")
 
-        # Auto-commit & push loss CSV to GitHub
+        # 1. Automatically plot loss curve PNG
+        try:
+            fig_path1 = f"outputs/figures/{exp_short}_loss_curve.png"
+            fig_path2 = f"paper/figures/{exp_short}_loss_curve.png"
+            plt.figure(figsize=(8, 5))
+            if "train_loss" in df.columns and df["train_loss"].notnull().any():
+                plt.plot(df["step"], df["train_loss"], label="Training Loss", color="#1f77b4", linewidth=2)
+            if "val_loss" in df.columns and df["val_loss"].notnull().any():
+                plt.plot(df["step"], df["val_loss"], label="Validation Loss", color="#ff7f0e", linewidth=2, linestyle="--")
+            plt.xlabel("Step")
+            plt.ylabel("Loss")
+            plt.title(f"Training & Validation Loss Curve - {exp_name}")
+            plt.legend()
+            plt.grid(True, linestyle=":", alpha=0.6)
+            plt.tight_layout()
+            plt.savefig(fig_path1, dpi=300)
+            plt.savefig(fig_path2, dpi=300)
+            plt.close()
+            logger.info(f"📈 Auto-generated loss plots: {fig_path1} & {fig_path2}")
+        except Exception as plot_err:
+            logger.warning(f"Could not auto-plot loss curve: {plot_err}")
+
+        # 2. Automatically Prune Intermediate Checkpoints (Keep Best/Highest Checkpoint Only)
+        try:
+            checkpoints = [d for d in output_dir.iterdir() if d.is_dir() and d.name.startswith("checkpoint-")]
+            if len(checkpoints) > 1:
+                checkpoints.sort(key=lambda x: int(x.name.split("-")[-1]))
+                best_ckpt = checkpoints[-1]
+                for old_ckpt in checkpoints[:-1]:
+                    import shutil
+                    shutil.rmtree(old_ckpt, ignore_errors=True)
+                logger.info(f"🧹 Pruned intermediate checkpoints. Kept best checkpoint: {best_ckpt.name}")
+        except Exception as prune_err:
+            logger.warning(f"Checkpoint pruning notice: {prune_err}")
+
+        # 3. Automatically Upload Best Checkpoints to Hugging Face Hub
+        try:
+            from huggingface_hub import HfApi
+            hf_token = os.environ.get("HF_TOKEN")
+            repo_id = os.environ.get("HF_REPO_ID", "aykgeh/Ekegusii-LLM-Translation")
+            if hf_token:
+                api = HfApi(token=hf_token)
+            parent_ckpt_dir = output_dir.parent.parent  # checkpoints/ directory
+            if parent_ckpt_dir.exists():
+                api.upload_folder(
+                    folder_path=str(parent_ckpt_dir),
+                    repo_id=repo_id,
+                    repo_type="model",
+                    delete_patterns="*"
+                )
+                logger.info(f"🤗 Automatically uploaded best checkpoints to Hugging Face: https://huggingface.co/{repo_id}")
+        except Exception as hf_err:
+            logger.warning(f"Hugging Face auto-upload notice: {hf_err}")
+
+        # 4. Automatically Commit & Push Plots, Figures, & Loss CSVs to GitHub
         try:
             import subprocess
-            subprocess.run(["git", "add", "-f", csv1, csv2], check=False)
-            subprocess.run(["git", "commit", "-m", f"Auto-save loss curve CSV for {exp_short}"], check=False)
+            subprocess.run(["git", "config", "--global", "--add", "safe.directory", "*"], check=False)
+            subprocess.run(["git", "add", "data/results/", "outputs/", "paper/figures/"], check=False)
+            subprocess.run(["git", "commit", "-m", f"Auto-save loss CSV and figures for {exp_name}"], check=False)
             subprocess.run(["git", "push", "origin", "main"], check=False)
-            logger.info(f"🚀 Automatically pushed {csv1} and {csv2} to GitHub!")
+            logger.info(f"🚀 Automatically pushed plots, figures, and CSVs to GitHub!")
         except Exception as push_err:
             logger.warning(f"Git auto-push notice: {push_err}")
 
     except Exception as exc:
-        logger.warning(f"Could not auto-save loss CSV: {exc}")
+        logger.warning(f"Could not complete post-training automation: {exc}")
 
     return trainer
 
