@@ -30,6 +30,8 @@ _ADJACENT_COMPARISONS: List[Tuple[str, str]] = [
     ("E4_Trilingual", "E5_Full_Resources"),
     ("E5_Full_Resources", "E6_Lexical_Augmentation"),
     ("E6_Lexical_Augmentation", "E7_Curriculum_Learning"),
+    ("E7_Curriculum_Learning", "E9_Sequential_Transfer"),
+    ("E9_Sequential_Transfer", "E10_Model_B_English_Ekegusii"),
 ]
 
 
