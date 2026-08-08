@@ -63,3 +63,68 @@ def run_evaluate(
     predictions = _INFERENCE_FN[model_name](sources, source_lang, target_lang, adapter_path=adapter_path)
 
     return helper.evaluate_predictions(predictions, references)
+
+
+def evaluate_all_saved_checkpoints(model_name: str = "qwen") -> Any:
+    """Scan checkpoints/{model_name}/ for all saved best model adapters,
+    evaluate both directions (Eng->Eke and Eke->Eng), and export a master comparison CSV.
+
+    Args:
+        model_name: "qwen" or "mistral".
+
+    Returns:
+        pd.DataFrame: Summary evaluation table across all saved models.
+    """
+    import os, pandas as pd
+    from pathlib import Path
+
+    checkpoints_base = Path(f"checkpoints/{model_name}")
+    results = []
+
+    logger.info(f"🔍 Starting Master Evaluation Sweep for {model_name} across all saved checkpoints...")
+
+    # 1. Evaluate Zero-Shot Baseline (E0)
+    for src, tgt in [("English", "Ekegusii"), ("Ekegusii", "English")]:
+        try:
+            metrics = run_evaluate(model_name=model_name, source_lang=src, target_lang=tgt, adapter_path=None)
+            results.append({
+                "Experiment": "E0_Baseline",
+                "Direction": f"{src}->{tgt}",
+                "SacreBLEU": round(metrics.get("score", metrics.get("bleu", 0.0)), 2),
+                "chrF++": round(metrics.get("chrf", 0.0), 2),
+                "Lexical_Accuracy": round(metrics.get("lexical_accuracy", 0.0), 2)
+            })
+        except Exception as e:
+            logger.warning(f"Notice on E0 evaluation ({src}->{tgt}): {e}")
+
+    # 2. Evaluate all saved best checkpoints
+    if checkpoints_base.exists():
+        for exp_dir in sorted(checkpoints_base.iterdir()):
+            if exp_dir.is_dir():
+                ckpts = [d for d in exp_dir.iterdir() if d.is_dir() and d.name.startswith("checkpoint-")]
+                if ckpts:
+                    ckpts.sort(key=lambda x: int(x.name.split("-")[-1]))
+                    best_ckpt = ckpts[-1]
+
+                    for src, tgt in [("English", "Ekegusii"), ("Ekegusii", "English")]:
+                        try:
+                            logger.info(f"📊 Evaluating {exp_dir.name} ({best_ckpt.name}) for {src}->{tgt}...")
+                            metrics = run_evaluate(model_name=model_name, source_lang=src, target_lang=tgt, adapter_path=str(best_ckpt))
+                            results.append({
+                                "Experiment": exp_dir.name,
+                                "Direction": f"{src}->{tgt}",
+                                "SacreBLEU": round(metrics.get("score", metrics.get("bleu", 0.0)), 2),
+                                "chrF++": round(metrics.get("chrf", 0.0), 2),
+                                "Lexical_Accuracy": round(metrics.get("lexical_accuracy", 0.0), 2)
+                            })
+                        except Exception as e:
+                            logger.warning(f"Notice on {exp_dir.name} evaluation ({src}->{tgt}): {e}")
+
+    df = pd.DataFrame(results)
+    os.makedirs("outputs/evaluation_reports", exist_ok=True)
+    os.makedirs("data/results", exist_ok=True)
+    df.to_csv("outputs/evaluation_reports/master_evaluation_results.csv", index=False)
+    df.to_csv("data/results/master_evaluation_results.csv", index=False)
+    logger.info("🏆 Master evaluation sweep complete! Exported to outputs/evaluation_reports/master_evaluation_results.csv")
+    return df
+
