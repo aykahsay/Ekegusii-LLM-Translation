@@ -286,6 +286,7 @@ def run_qlora_training(
                 if "eval_loss" in entry:
                     step_map[step]["Validation_Loss"] = entry["eval_loss"]
 
+        exp_name = output_dir.name
         exp_short = exp_name.split("_")[0] if "_" in exp_name else exp_name
         records = []
         for step, vals in sorted(step_map.items()):
