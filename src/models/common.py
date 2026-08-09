@@ -347,8 +347,7 @@ def run_qlora_training(
             from huggingface_hub import HfApi
             hf_token = os.environ.get("HF_TOKEN")
             repo_id = os.environ.get("HF_REPO_ID", "aykgeh/Ekegusii-LLM-Translation")
-            if hf_token:
-                api = HfApi(token=hf_token)
+            api = HfApi(token=hf_token) if hf_token else HfApi()
             parent_ckpt_dir = output_dir.parent.parent  # checkpoints/ directory
             if parent_ckpt_dir.exists():
                 api.upload_folder(
@@ -364,6 +363,12 @@ def run_qlora_training(
         # 4. Automatically Commit & Push Plots, Figures, & Loss CSVs to GitHub
         try:
             import subprocess
+            os.system("chmod -R ugo+rwX .git 2>/dev/null")
+            if os.path.exists(".git/index.lock"):
+                try:
+                    os.remove(".git/index.lock")
+                except Exception:
+                    pass
             subprocess.run(["git", "config", "--global", "--add", "safe.directory", "*"], check=False)
             subprocess.run(["git", "add", "data/results/", "outputs/", "paper/figures/"], check=False)
             subprocess.run(["git", "commit", "-m", f"Auto-save loss CSV and figures for {exp_name}"], check=False)
