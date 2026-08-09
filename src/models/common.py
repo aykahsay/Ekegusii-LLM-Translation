@@ -273,8 +273,10 @@ def run_qlora_training(
 
     # Automatically export Step, Training Loss, Validation Loss CSV & Loss Plots
     try:
+        exp_name = str(output_dir).replace("\\", "/").rstrip("/").split("/")[-1]
+        exp_short = exp_name.split("_")[0] if "_" in exp_name else exp_name
         import pandas as pd, os, matplotlib.pyplot as plt
-        history = trainer.state.log_history
+        history = getattr(trainer.state, "log_history", [])
         step_map = {}
         for entry in history:
             step = entry.get("step")
@@ -285,9 +287,6 @@ def run_qlora_training(
                     step_map[step]["Training_Loss"] = entry["loss"]
                 if "eval_loss" in entry:
                     step_map[step]["Validation_Loss"] = entry["eval_loss"]
-
-        exp_name = output_dir.name
-        exp_short = exp_name.split("_")[0] if "_" in exp_name else exp_name
         records = []
         for step, vals in sorted(step_map.items()):
             if vals["Training_Loss"] is not None or vals["Validation_Loss"] is not None:
