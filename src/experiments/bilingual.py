@@ -27,14 +27,22 @@ _EXPERIMENT_IDS = {
     "eng_eke": "E1_English_Ekegusii",
     "swa_eke": "E2_Swahili_Ekegusii",
     "combined": "E3_Bilingual",
-    "eng_swa": "E10_Model_A_English_Swahili",
 }
 
 
 class BilingualExperiment(SentenceLevelExperiment):
-    """E1/E2/E3/E10: bidirectional training on one or both bilingual pairs."""
+    """E1/E2/E3: bidirectional training on one or both bilingual pairs."""
 
-    def __init__(self, mode: str, **kwargs) -> None:
+    def __init__(self, mode: BilingualMode, **kwargs) -> None:
+        """Initialize the experiment for a specific bilingual resource mode.
+
+        Args:
+            mode: "eng_eke" (E1), "swa_eke" (E2), or "combined" (E3).
+            **kwargs: Passed through to `BaseExperiment.__init__`.
+
+        Raises:
+            ValueError: If `mode` is not one of the three supported values.
+        """
         if mode not in _EXPERIMENT_IDS:
             raise ValueError(f"mode must be one of {list(_EXPERIMENT_IDS)}, got '{mode}'.")
         self.mode = mode
@@ -56,9 +64,6 @@ class BilingualExperiment(SentenceLevelExperiment):
         if self.mode in ("swa_eke", "combined"):
             frames.append(extract_pairs(train_df, "Kiswahili", "Ekegusii"))
             frames.append(extract_pairs(train_df, "Ekegusii", "Kiswahili"))
-        if self.mode == "eng_swa":
-            frames.append(extract_pairs(train_df, "English", "Kiswahili"))
-            frames.append(extract_pairs(train_df, "Kiswahili", "English"))
 
         pairs_df = pd.concat(frames, ignore_index=True)
         tasks_df = self.build_instruction_tasks_from_pairs(pairs_df)

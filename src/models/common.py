@@ -123,7 +123,10 @@ def generate_translations(
     generation_kwargs: Dict[str, Any] = generation_cfg.to_container()
 
     outputs: List[str] = []
+    total_batches = (len(prompts) + batch_size - 1) // batch_size
+    print(f"   ⚡ Generating translations across {total_batches} batches (batch_size={batch_size})...")
     for i in range(0, len(prompts), batch_size):
+        batch_num = (i // batch_size) + 1
         batch_prompts = prompts[i : i + batch_size]
         encoded = tokenizer(
             batch_prompts, return_tensors="pt", padding=True, truncation=True, max_length=512
@@ -138,7 +141,9 @@ def generate_translations(
         input_length = encoded["input_ids"].shape[1]
         decoded = tokenizer.batch_decode(generated[:, input_length:], skip_special_tokens=True)
         outputs.extend(decoded)
+        print(f"      ✓ Batch {batch_num}/{total_batches} done ({len(outputs)}/{len(prompts)} sentences translated)", end="\r")
 
+    print()  # Newline after batch completion
     logger.info(f"Generated {len(outputs):,} translations (batch_size={batch_size}).")
     return outputs
 
@@ -273,10 +278,8 @@ def run_qlora_training(
 
     # Automatically export Step, Training Loss, Validation Loss CSV & Loss Plots
     try:
-        exp_name = str(output_dir).replace("\\", "/").rstrip("/").split("/")[-1]
-        exp_short = exp_name.split("_")[0] if "_" in exp_name else exp_name
         import pandas as pd, os, matplotlib.pyplot as plt
-        history = getattr(trainer.state, "log_history", [])
+        history = trainer.state.log_history
         step_map = {}
         for entry in history:
             step = entry.get("step")
@@ -287,6 +290,9 @@ def run_qlora_training(
                     step_map[step]["Training_Loss"] = entry["loss"]
                 if "eval_loss" in entry:
                     step_map[step]["Validation_Loss"] = entry["eval_loss"]
+
+        exp_name = output_dir.name
+        exp_short = exp_name.split("_")[0] if "_" in exp_name else exp_name
         records = []
         for step, vals in sorted(step_map.items()):
             if vals["Training_Loss"] is not None or vals["Validation_Loss"] is not None:
@@ -347,7 +353,8 @@ def run_qlora_training(
             from huggingface_hub import HfApi
             hf_token = os.environ.get("HF_TOKEN")
             repo_id = os.environ.get("HF_REPO_ID", "aykgeh/Ekegusii-LLM-Translation")
-            api = HfApi(token=hf_token) if hf_token else HfApi()
+            if hf_token:
+                api = HfApi(token=hf_token)
             parent_ckpt_dir = output_dir.parent.parent  # checkpoints/ directory
             if parent_ckpt_dir.exists():
                 api.upload_folder(
@@ -363,12 +370,6 @@ def run_qlora_training(
         # 4. Automatically Commit & Push Plots, Figures, & Loss CSVs to GitHub
         try:
             import subprocess
-            os.system("chmod -R ugo+rwX .git 2>/dev/null")
-            if os.path.exists(".git/index.lock"):
-                try:
-                    os.remove(".git/index.lock")
-                except Exception:
-                    pass
             subprocess.run(["git", "config", "--global", "--add", "safe.directory", "*"], check=False)
             subprocess.run(["git", "add", "data/results/", "outputs/", "paper/figures/"], check=False)
             subprocess.run(["git", "commit", "-m", f"Auto-save loss CSV and figures for {exp_name}"], check=False)

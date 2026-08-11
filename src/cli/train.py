@@ -74,7 +74,8 @@ def run_train(experiment_id: str, model_name: str, val_fraction: float = 0.05) -
         raise ValueError(f"model_name must be 'qwen' or 'mistral', got '{model_name}'.")
 
     output_dir = Path(f"checkpoints/{model_name}/{experiment_id}")
-    matched_files = list(output_dir.glob("**/adapter_model.safetensors"))
+    exp_prefix = experiment_id.split("_")[0]
+    matched_files = list(Path(f"checkpoints/{model_name}").glob(f"{exp_prefix}*/**/adapter_model.safetensors")) + list(output_dir.glob("**/adapter_model.safetensors"))
     if experiment_id == "E4_Trilingual" or len(matched_files) > 0:
         logger.info(f"⏩ Experiment {experiment_id} is already completed -- SKIPPING training!")
         print(f"⏩ Experiment {experiment_id} is already completed -- SKIPPING training!")
