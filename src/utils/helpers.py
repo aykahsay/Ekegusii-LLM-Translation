@@ -10,7 +10,12 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+try:
+    import typing_extensions
+    if not hasattr(typing_extensions, 'TypeIs'):
+        typing_extensions.TypeIs = getattr(typing_extensions, 'TypeGuard', getattr(typing_extensions, 'Any', object))
+except ImportError:
+    pass
 
 import torch
 
