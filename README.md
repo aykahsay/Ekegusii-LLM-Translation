@@ -13,7 +13,7 @@ Official open-source research repository for the ACL/EMNLP paper:
 
 ## 📌 Research Objective & Central Question
 
-Low-resource African language translation faces severe data scarcity and morphological complexity. This repository provides a **Resource-Aware Instruction-Tuning Translation Framework** that systematically evaluates how different linguistic data resources (monolingual, bilingual, trilingual, and dictionary lexicons) contribute to machine translation performance when instruction-tuning Large Language Models (**Qwen2.5 7B Instruct** and **Mistral 7B Instruct v0.3**) on **Ekegusii (Bantu, eke)**, **Kiswahili (swh)**, and **English (eng)** on an **NVIDIA A100 80GB GPU**.
+Low-resource African language translation faces severe data scarcity and morphological complexity. This repository provides a **Resource-Aware Instruction-Tuning Translation Framework** that systematically evaluates how different linguistic data resources (monolingual, bilingual, trilingual, and dictionary lexicons) contribute to machine translation performance when instruction-tuning Large Language Models (**Qwen2.5 7B Instruct** and **NLB200**) on **Ekegusii (Bantu, eke)**, **Kiswahili (swh)**, and **English (eng)** on an **NVIDIA A100 80GB GPU**.
 
 > **Central Research Question**: *How can multilingual LLMs be effectively adapted for high-quality translation between Ekegusii, Kiswahili, and English using limited multilingual resources?*
 
@@ -66,7 +66,6 @@ Ekegusii-LLM-Translation/
 │   ├── 05_instruction_generation.ipynb (05. 6-Way Multilingual Instruction Generator)
 │   ├── 06_dataset_scheduler.ipynb      (06. Dynamic Dataset Scheduler & Sampler)
 │   ├── 07_train_qwen.ipynb              (07. Qwen2.5 7B Instruct QLoRA Fine-Tuning Engine)
-│   ├── 08_train_mistral.ipynb          (08. Mistral-7B-Instruct-v0.3 QLoRA Fine-Tuning Engine)
 │   ├── 09_translation_evaluation.ipynb (09. SacreBLEU, chrF++, & COMET Evaluation)
 │   ├── 10_dictionary_analysis.ipynb    (10. Lexical Term Accuracy & Rare-Word Study)
 │   ├── 11_ablation_study.ipynb         (11. Resource Attribution Ablation E0 - E8)
