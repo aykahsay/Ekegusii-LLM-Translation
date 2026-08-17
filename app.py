@@ -136,11 +136,14 @@ def load_hf_model(model_key: str, hf_token: str = None):
 
         token_arg = hf_token if hf_token else os.environ.get("HF_TOKEN")
 
+        device_map = {"": 0} if torch.cuda.is_available() else "auto"
+
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=torch.bfloat16
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            llm_int8_enable_fp32_cpu_offload=True
         )
 
         tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, padding_side="left", token=token_arg)
@@ -151,7 +154,7 @@ def load_hf_model(model_key: str, hf_token: str = None):
             model = AutoModelForCausalLM.from_pretrained(
                 BASE_MODEL_ID,
                 quantization_config=bnb_config,
-                device_map="auto",
+                device_map=device_map,
                 torch_dtype=torch.bfloat16,
                 token=token_arg
             )
@@ -159,7 +162,7 @@ def load_hf_model(model_key: str, hf_token: str = None):
             base_model = AutoModelForCausalLM.from_pretrained(
                 BASE_MODEL_ID,
                 quantization_config=bnb_config,
-                device_map="auto",
+                device_map=device_map,
                 torch_dtype=torch.bfloat16,
                 token=token_arg
             )
