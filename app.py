@@ -124,7 +124,7 @@ SAMPLE_TRANSLATIONS = {
 # CACHED HUGGING FACE MODEL LOADER
 # ---------------------------------------------------------------------------
 @st.cache_resource(show_spinner="Downloading and loading model weights from Hugging Face...")
-def load_hf_model(model_key: str):
+def load_hf_model(model_key: str, hf_token: str = None):
     """Load model and tokenizer from Hugging Face Hub with caching."""
     if model_key == "OFFLINE_DEMO":
         return None, None
@@ -134,6 +134,8 @@ def load_hf_model(model_key: str):
         from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
         from peft import PeftModel
 
+        token_arg = hf_token if hf_token else os.environ.get("HF_TOKEN")
+
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
@@ -141,7 +143,7 @@ def load_hf_model(model_key: str):
             bnb_4bit_compute_dtype=torch.bfloat16
         )
 
-        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, padding_side="left")
+        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, padding_side="left", token=token_arg)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
@@ -150,17 +152,19 @@ def load_hf_model(model_key: str):
                 BASE_MODEL_ID,
                 quantization_config=bnb_config,
                 device_map="auto",
-                torch_dtype=torch.bfloat16
+                torch_dtype=torch.bfloat16,
+                token=token_arg
             )
         else:
             base_model = AutoModelForCausalLM.from_pretrained(
                 BASE_MODEL_ID,
                 quantization_config=bnb_config,
                 device_map="auto",
-                torch_dtype=torch.bfloat16
+                torch_dtype=torch.bfloat16,
+                token=token_arg
             )
             subfolder = f"qwen/{model_key}"
-            model = PeftModel.from_pretrained(base_model, HF_REPO_ID, subfolder=subfolder)
+            model = PeftModel.from_pretrained(base_model, HF_REPO_ID, subfolder=subfolder, token=token_arg)
 
         model.eval()
         return model, tokenizer
@@ -203,6 +207,10 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("🎛️ Decoding Hyperparameters")
 max_new_tokens = st.sidebar.slider("Max New Tokens", 32, 256, 128, step=16)
 temperature = st.sidebar.slider("Temperature (0.0 = Greedy)", 0.0, 1.0, 0.1, step=0.05)
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("🔑 Hugging Face Authentication")
+hf_token_input = st.sidebar.text_input("HF Access Token (Required if repo is private)", type="password", help="Enter your HF read token from huggingface.co/settings/tokens")
 
 st.sidebar.markdown("---")
 st.sidebar.info(f"🤗 **HF Repo**: [{HF_REPO_ID}](https://huggingface.co/{HF_REPO_ID})")
@@ -250,7 +258,7 @@ with tab1:
                 st.markdown(f'<div class="info-badge">Model Active: {selected_label.split(" [")[0]}</div>', unsafe_allow_html=True)
                 
                 with st.spinner("Translating via Hugging Face model adapter..."):
-                    model, tokenizer = load_hf_model(selected_model_key)
+                    model, tokenizer = load_hf_model(selected_model_key, hf_token=hf_token_input)
                     
                     if model is not None and tokenizer is not None:
                         output_text = run_hf_inference(model, tokenizer, input_text, src_lang, tgt_lang, max_new_tokens, temperature)
