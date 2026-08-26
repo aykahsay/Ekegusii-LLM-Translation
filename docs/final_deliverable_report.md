@@ -43,13 +43,13 @@ We conducted 10 distinct experiment series to systematically isolate the impact 
 
 ---
 
-## 3. Head-to-Head Architectural Comparison (NLLB / mT5 vs. Qwen-7B)
+## 3. Head-to-Head Architectural Comparison (NLLB vs. Qwen-7B)
 
-### Model 1: NLLB-200 Distilled & mT5-Small Baseline
+### Model 1: NLLB-200 Distilled 
 * **English → Kiswahili (`facebook/nllb-200-distilled-600M`)**: Fine-tuned with Selective Layer Freezing (first 6 encoder layers frozen, 75.6M parameters frozen). Achieved **63.83 SacreBLEU** and **78.65 chrF**.
 * **English ↔ Ekegusii (`google/mt5-small`)**: Text-to-text prompt fine-tuning (`"translate English to Ekegusii: ..."`). Achieved **1.02 SacreBLEU** and **15.32 chrF**. Whole-word BLEU failed due to small dataset size and agglutinative morphemes.
 
-### Model 2: Qwen-7B & Mistral-7B QLoRA
+### Model 2: Qwen-7B QLoRa
 * **Qwen-7B QLoRA**: Quantized 4-bit NF4 double quantization with LoRA ($r=16, \alpha=32$). Fine-tuned on **49,277 sentences**.
 * **Result**: Elevated Ekegusii translation from **1.02 BLEU** to **16.28 / 29.50 BLEU** and chrF++ from **15.32** to **44.93** (**16x SacreBLEU improvement**).
 
