@@ -1,0 +1,365 @@
+import json
+import os
+
+notebook_path = "notebooks/colab_live_translation_demo.ipynb"
+
+cells = [
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# 🌍 Ekegusii Multilingual NMT: Google Colab Live Translation Demo\n",
+            "This notebook allows you to test **live machine translation** into **Ekegusii** using fine-tuned **Qwen2.5-7B QLoRA** models loaded directly from **Hugging Face Hub** (`aykgeh/Ekegusii-LLM-Translation`).\n",
+            "\n",
+            "### 🏆 Featured Winner Model:\n",
+            "- **`qwen/E10_Model_B_English_Ekegusii`** — 3-Stage Sequential Transfer Model (English → Ekegusii via Kiswahili Bantu Pivot).\n",
+            "- Performance: **16.3 BLEU / 42.9 chrF++**."
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 🔑 Step 1: Hugging Face Authentication (Auto-reads Colab Secrets)\n",
+            "This cell automatically checks for `HF_TOKEN` stored in **Google Colab Secrets** (🔑 icon on the left sidebar).  \n",
+            "⚠️ **Important**: Make sure the toggle switch under **Notebook access** is switched **ON (Blue)** in the Secrets panel!"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "from huggingface_hub import login\n",
+            "import os\n",
+            "\n",
+            "#@title 🔑 Read Token from Colab Secrets or Manual Entry\n",
+            "HF_TOKEN_INPUT = \"\" #@param {type:\"string\"}\n",
+            "\n",
+            "hf_token = None\n",
+            "# 1. Try Colab Userdata Secrets\n",
+            "try:\n",
+            "    from google.colab import userdata\n",
+            "    try:\n",
+            "        hf_token = userdata.get('HF_TOKEN')\n",
+            "    except Exception:\n",
+            "        try:\n",
+            "            hf_token = userdata.get('HF_TOKE') # Fallback check\n",
+            "        except Exception:\n",
+            "            hf_token = None\n",
+            "except Exception:\n",
+            "    hf_token = None\n",
+            "\n",
+            "# 2. Fallback to manual form entry\n",
+            "if not hf_token and HF_TOKEN_INPUT.strip():\n",
+            "    hf_token = HF_TOKEN_INPUT.strip()\n",
+            "\n",
+            "if hf_token:\n",
+            "    login(token=hf_token.strip())\n",
+            "    os.environ[\"HF_TOKEN\"] = hf_token.strip()\n",
+            "    print(\"✅ Hugging Face Authentication Successful!\")\n",
+            "else:\n",
+            "    print(\"ℹ️ No HF_TOKEN detected.\")\n",
+            "    print(\"👉 If your repo is Private, click the key icon (🔑) on the left sidebar in Colab and toggle Notebook Access to ON for HF_TOKEN.\")"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 📦 Step 2: Install Dependencies & Setup Environment"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# 1. Install required packages on Colab GPU instance\n",
+            "!pip install -q transformers peft bitsandbytes accelerate datasets streamlit\n",
+            "\n",
+            "import os, sys, torch\n",
+            "print(f'PyTorch Version: {torch.__version__}')\n",
+            "print(f'CUDA Available: {torch.cuda.is_available()}')\n",
+            "if torch.cuda.is_available():\n",
+            "    print(f'GPU Device: {torch.cuda.get_device_name(0)}')\n",
+            "else:\n",
+            "    print('Warning: No GPU detected! Please enable GPU in Colab (Runtime -> Change runtime type -> T4/A100 GPU).')"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 📂 Step 3: Clone GitHub Repository (Optional)"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# Clone repository if running in fresh Colab session\n",
+            "if not os.path.exists('src'):\n",
+            "    !git clone https://github.com/aykahsay/Ekegusii-LLM-Translation.git repo\n",
+            "    %cd repo\n",
+            "else:\n",
+            "    print('Directory already set up.')"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 🤗 Step 4: Load Model & Tokenizer from Hugging Face"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig\n",
+            "from peft import PeftModel\n",
+            "import torch, os\n",
+            "\n",
+            "# Model identifiers\n",
+            "BASE_MODEL_ID = 'Qwen/Qwen2.5-7B-Instruct'\n",
+            "HF_REPO_ID = 'aykgeh/Ekegusii-LLM-Translation'\n",
+            "SUBFOLDER = 'qwen/E10_Model_B_English_Ekegusii/checkpoint-8000'  # E10 Model B Winner\n",
+            "token_value = os.environ.get('HF_TOKEN', None) or None\n",
+            "\n",
+            "# Explicit GPU device map to prevent CPU offload error on Colab\n",
+            "device_map = {\"\": 0} if torch.cuda.is_available() else \"auto\"\n",
+            "\n",
+            "print('⏳ 1/3 Loading 4-bit Quantization Config...')\n",
+            "bnb_config = BitsAndBytesConfig(\n",
+            "    load_in_4bit=True,\n",
+            "    bnb_4bit_quant_type='nf4',\n",
+            "    bnb_4bit_use_double_quant=True,\n",
+            "    bnb_4bit_compute_dtype=torch.bfloat16,\n",
+            "    llm_int8_enable_fp32_cpu_offload=True\n",
+            ")\n",
+            "\n",
+            "print('⏳ 2/3 Loading Qwen2.5-7B Base Model & Tokenizer...')\n",
+            "tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, padding_side='left', token=token_value)\n",
+            "if tokenizer.pad_token is None:\n",
+            "    tokenizer.pad_token = tokenizer.eos_token\n",
+            "\n",
+            "base_model = AutoModelForCausalLM.from_pretrained(\n",
+            "    BASE_MODEL_ID,\n",
+            "    quantization_config=bnb_config,\n",
+            "    device_map=device_map,\n",
+            "    torch_dtype=torch.bfloat16,\n",
+            "    token=token_value\n",
+            ")\n",
+            "\n",
+            "print(f\"⏳ 3/3 Attaching E10 Model B Adapter from Hugging Face ('{SUBFOLDER}')...\")\n",
+            "model = PeftModel.from_pretrained(base_model, HF_REPO_ID, subfolder=SUBFOLDER, token=token_value)\n",
+            "model.eval()\n",
+            "print('✅ Model Successfully Loaded on Colab GPU!')"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 🚀 Step 5: Live Translation Helper & Benchmark Evaluation"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "def translate_sentence(text: str, source_lang: str = 'English', target_lang: str = 'Ekegusii') -> str:\n",
+            "    \"\"\"Translate a single sentence using the loaded E10 model.\"\"\"\n",
+            "    prompt = f'<|im_start|>user\\nTranslate {source_lang} to {target_lang}:\\n{text}<|im_end|>\\n<|im_start|>assistant\\n'\n",
+            "    inputs = tokenizer(prompt, return_tensors='pt').to(model.device)\n",
+            "\n",
+            "    with torch.no_grad():\n",
+            "        outputs = model.generate(\n",
+            "            **inputs,\n",
+            "            max_new_tokens=128,\n",
+            "            temperature=0.1,\n",
+            "            do_sample=False,\n",
+            "            pad_token_id=tokenizer.pad_token_id\n",
+            "        )\n",
+            "\n",
+            "    return tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True).strip()\n",
+            "\n",
+            "# --- Test Public Service Announcements (PSAs) ---\n",
+            "test_psas = [\n",
+            "    'Please wash your hands regularly with clean running water and soap to prevent cholera infection.',\n",
+            "    'Farmers in drought-affected areas are advised to store harvested grain in airtight bags.',\n",
+            "    'Ensure all pregnant women attend early prenatal clinic visits at the nearest county health center.',\n",
+            "    'Residents living in flood-prone riverbanks must evacuate to higher ground immediately.',\n",
+            "    'Stay indoors during severe thunderstorm alerts and avoid standing under tall trees.'\n",
+            "]\n",
+            "\n",
+            "print('=' * 70)\n",
+            "print('🌍 EKEGUSII LIVE TRANSLATION RESULTS (E10 Model B)')\n",
+            "print('=' * 70)\n",
+            "\n",
+            "for i, sentence in enumerate(test_psas, 1):\n",
+            "    ekegusii_out = translate_sentence(sentence, source_lang='English', target_lang='Ekegusii')\n",
+            "    print(f'\\n[{i}] EN:  {sentence}')\n",
+            "    print(f'    EKE: {ekegusii_out}')\n",
+            "\n",
+            "print('=' * 70)"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 💬 Step 6: Interactive Form Widget (Colab UI)"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "#@title 🌐 Translate Custom Sentence Live { run: 'auto' }\n",
+            "Source_Language = 'English' #@param ['English', 'Kiswahili']\n",
+            "Target_Language = 'Ekegusii' #@param ['Ekegusii', 'Kiswahili', 'English']\n",
+            "Custom_Input = 'Parents are urged to register all school-age children for the upcoming academic term.' #@param {type:'string'}\n",
+            "\n",
+            "if Custom_Input.strip():\n",
+            "    result = translate_sentence(Custom_Input, source_lang=Source_Language, target_lang=Target_Language)\n",
+            "    print('=' * 70)\n",
+            "    print(f'INPUT ({Source_Language}): {Custom_Input}')\n",
+            "    print(f'TRANSLATION ({Target_Language}): {result}')\n",
+            "    print('=' * 70)"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 🎛️ Step 7: Test Other Model Adapters (E9, E5, E1, E10 Model C)"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "CHECKPOINT_MAP = {\n",
+            "    'E10_Model_B_English_Ekegusii': 'qwen/E10_Model_B_English_Ekegusii/checkpoint-8000',\n",
+            "    'E10_Model_C_Swahili_Ekegusii': 'qwen/E10_Model_C_Swahili_Ekegusii/checkpoint-6000',\n",
+            "    'E9_Sequential_Transfer': 'qwen/E9_Sequential_Transfer/checkpoint-8000',\n",
+            "    'E5_Full_Resources': 'qwen/E5_Full_Resources/checkpoint-18000',\n",
+            "    'E1_English_Ekegusii': 'qwen/E1_English_Ekegusii/checkpoint-8000'\n",
+            "}\n",
+            "\n",
+            "def switch_and_test_adapter(name: str, subfolder: str, test_text: str):\n",
+            "    \"\"\"Load any model adapter from Hugging Face subfolder and translate.\"\"\"\n",
+            "    print(f'\\n🔄 Switching adapter to \"{name}\" ({subfolder})...')\n",
+            "    peft_model = PeftModel.from_pretrained(base_model, HF_REPO_ID, subfolder=subfolder, token=token_value)\n",
+            "    peft_model.eval()\n",
+            "    \n",
+            "    prompt = f'<|im_start|>user\\nTranslate English to Ekegusii:\\n{test_text}<|im_end|>\\n<|im_start|>assistant\\n'\n",
+            "    inputs = tokenizer(prompt, return_tensors='pt').to(peft_model.device)\n",
+            "    with torch.no_grad():\n",
+            "        out = peft_model.generate(**inputs, max_new_tokens=128, temperature=0.1, do_sample=False)\n",
+            "    res = tokenizer.decode(out[0][inputs.input_ids.shape[1]:], skip_special_tokens=True).strip()\n",
+            "    print(f'[{name}]: {res}')\n",
+            "\n",
+            "sample_input = 'Please wash your hands regularly with clean running water and soap.'\n",
+            "print(f'Source Text: {sample_input}\\n')\n",
+            "\n",
+            "for name, subfolder in CHECKPOINT_MAP.items():\n",
+            "    switch_and_test_adapter(name, subfolder, sample_input)"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## ⚡ Step 8: Launch Streamlit Web App with Cloudflare Tunnel (No IP Password Required)"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# 1. Install Cloudflare Tunnel binary\n",
+            "!wget -q -O cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb\n",
+            "!dpkg -i cloudflared.deb > /dev/null 2>&1\n",
+            "\n",
+            "# 2. Launch Streamlit server and Cloudflare tunnel in background\n",
+            "import subprocess, time, re\n",
+            "from IPython.display import HTML, display\n",
+            "\n",
+            "print('🚀 Starting Streamlit Web App on port 8501...')\n",
+            "subprocess.Popen(['streamlit', 'run', 'app.py', '--server.port', '8501', '--server.headless', 'true'])\n",
+            "time.sleep(3)\n",
+            "\n",
+            "print('⚡ Initializing Cloudflare Tunnel...')\n",
+            "tunnel_process = subprocess.Popen(\n",
+            "    ['cloudflared', 'tunnel', '--url', 'http://127.0.0.1:8501'],\n",
+            "    stdout=subprocess.PIPE,\n",
+            "    stderr=subprocess.STDOUT,\n",
+            "    text=True\n",
+            ")\n",
+            "\n",
+            "public_url = None\n",
+            "start_time = time.time()\n",
+            "while time.time() - start_time < 30:\n",
+            "    line = tunnel_process.stdout.readline()\n",
+            "    if not line:\n",
+            "        time.sleep(0.2)\n",
+            "        continue\n",
+            "    match = re.search(r'https://[a-zA-Z0-9-]+\\.trycloudflare\\.com', line)\n",
+            "    if match:\n",
+            "        public_url = match.group(0)\n",
+            "        break\n",
+            "\n",
+            "if public_url:\n",
+            "    print(f'✅ Live App URL: {public_url}')\n",
+            "    display(HTML(f'''\n",
+            "    <div style=\"background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-radius: 12px; border: 2px solid #3b82f6; text-align: center; font-family: sans-serif;\">\n",
+            "        <h2 style=\"color: #60a5fa; margin: 0 0 10px 0;\">⚡ Cloudflare Tunnel Active!</h2>\n",
+            "        <p style=\"color: #e2e8f0; font-size: 1.1rem;\">Click below to launch your Streamlit NMT App (No Password / IP check required):</p>\n",
+            "        <a href=\"{public_url}\" target=\"_blank\" style=\"display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 1.2rem;\">🚀 Open Live NMT Web App</a>\n",
+            "    </div>\n",
+            "    '''))\n",
+            "else:\n",
+            "    print('⚠️ Cloudflare URL detection timed out. Check process output.')"
+        ]
+    }
+]
+
+notebook_json = {
+    "cells": cells,
+    "metadata": {
+        "accelerator": "GPU",
+        "colab": {
+            "name": "colab_live_translation_demo.ipynb",
+            "provenance": []
+        },
+        "gpuClass": "standard",
+        "language_info": {
+            "name": "python"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 2
+}
+
+os.makedirs("notebooks", exist_ok=True)
+with open(notebook_path, "w", encoding="utf-8") as f:
+    json.dump(notebook_json, f, indent=2)
+
+print(f"Successfully updated notebook generator with device_map correction: {notebook_path}")

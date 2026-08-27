@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekegusii LLM Translation | Cloudflare Colab Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">🌍</div>
+                <div>
+                    <h1 class="app-title">Ekegusii LLM NMT Portal</h1>
+                    <p class="app-subtitle">Powered by Qwen2.5 & Hugging Face LoRA Checkpoints • Cloudflare Secured</p>
+                </div>
+            </div>
+            <div class="header-badges">
+                <span class="badge badge-hf" id="hfBadge">🤗 aykgeh/Ekegusii-LLM-Translation</span>
+                <span class="badge badge-tunnel" id="tunnelBadge">⚡ Cloudflare Tunnel Active</span>
+                <span class="badge badge-gpu" id="gpuBadge">🚀 GPU Accelerated</span>
+            </div>
+        </header>
+
+        <!-- Model Banner Selector -->
+        <div class="model-bar-card">
+            <div class="model-bar-info">
+                <span class="model-label">Active Model Adapter:</span>
+                <span class="model-name" id="activeModelName">qwen/E1_English_Ekegusii/checkpoint-8000</span>
+            </div>
+            <div class="model-bar-controls">
+                <select id="adapterSelect" class="styled-select">
+                    <option value="qwen/E10_Model_B_English_Ekegusii/checkpoint-8000" selected>🏆 E10 Model B (English → Ekegusii via Swahili Pivot) [Winner]</option>
+                    <option value="qwen/E1_English_Ekegusii/checkpoint-8000">📍 E1 English-Ekegusii Checkpoint-8000</option>
+                    <option value="qwen/E10_Model_C_Swahili_Ekegusii/checkpoint-6000">🌍 E10 Model C (Swahili → Ekegusii via English Pivot)</option>
+                    <option value="qwen/E9_Sequential_Transfer/checkpoint-8000">🔗 E9 Sequential Transfer (Swahili → Ekegusii)</option>
+                    <option value="qwen/E5_Full_Resources/checkpoint-18000">📚 E5 Full Resources (Multilingual Trilingual)</option>
+                </select>
+                <button id="switchModelBtn" class="btn btn-secondary">
+                    <span>🔄 Switch Adapter</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Translation Workspace -->
+        <main class="main-workspace">
+            <div class="workspace-card">
+                <!-- Source Box -->
+                <div class="translation-panel source-panel">
+                    <div class="panel-header">
+                        <div class="lang-selector">
+                            <select id="sourceLang" class="lang-select">
+                                <option value="English">English</option>
+                                <option value="Kiswahili">Kiswahili</option>
+                            </select>
+                        </div>
+                        <div class="char-count" id="charCount">0 / 1000</div>
+                    </div>
+                    <div class="panel-body">
+                        <textarea id="sourceText" class="translation-textarea" placeholder="Enter text or public service announcement here to translate into Ekegusii..." maxlength="1000"></textarea>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="preset-dropdown-container">
+                            <label for="presetSelect" class="preset-label">📋 Sample PSAs:</label>
+                            <select id="presetSelect" class="preset-select">
+                                <option value="">Select a sample domain text...</option>
+                                <optgroup label="🏥 Health">
+                                    <option value="Please wash your hands regularly with clean running water and soap to prevent cholera infection.">Health: Handwashing & Cholera Prevention</option>
+                                    <option value="Ensure all pregnant women attend early prenatal clinic visits at the nearest county health center.">Health: Maternal & Child Healthcare</option>
+                                </optgroup>
+                                <optgroup label="🌾 Agriculture">
+                                    <option value="Farmers in drought-affected areas are advised to store harvested grain in airtight bags.">Agriculture: Grain Storage in Drought</option>
+                                    <option value="Inspect your maize crop regularly for fall armyworm larvae and report infestations immediately.">Agriculture: Armyworm Pest Control</option>
+                                </optgroup>
+                                <optgroup label="🚨 Emergency & Disaster">
+                                    <option value="Residents living in flood-prone riverbanks must evacuate to higher ground immediately.">Emergency: Riverbank Flood Evacuation</option>
+                                    <option value="Stay indoors during severe thunderstorm alerts and avoid standing under tall trees.">Emergency: Severe Thunderstorm Safety</option>
+                                </optgroup>
+                                <optgroup label="📢 Governance">
+                                    <option value="All citizens are reminded to collect their national identification cards at the registrar office.">Governance: ID Card Collection Notice</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <button id="translateBtn" class="btn btn-primary">
+                            <span>✨ Translate Now</span>
+                            <div class="spinner hidden" id="translateSpinner"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Swap Divider -->
+                <div class="swap-divider">
+                    <button class="swap-btn" id="swapBtn" title="Swap languages">⇄</button>
+                </div>
+
+                <!-- Target Box -->
+                <div class="translation-panel target-panel">
+                    <div class="panel-header">
+                        <div class="lang-selector">
+                            <select id="targetLang" class="lang-select">
+                                <option value="Ekegusii">Ekegusii (EkeGusii)</option>
+                                <option value="Kiswahili">Kiswahili</option>
+                                <option value="English">English</option>
+                            </select>
+                        </div>
+                        <div class="latency-badge hidden" id="latencyBadge">⏱️ <span id="latencyTime">0</span> ms</div>
+                    </div>
+                    <div class="panel-body">
+                        <div id="targetText" class="translation-output placeholder">
+                            Translation output will appear here...
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="output-actions">
+                            <button id="copyBtn" class="btn btn-icon" title="Copy Translation">
+                                📋 Copy Text
+                            </button>
+                            <button id="speakBtn" class="btn btn-icon" title="Listen to Pronunciation">
+                                🔊 Listen
+                            </button>
+                        </div>
+                        <div class="model-tag" id="outputModelTag">Qwen2.5-7B + HF Adapter</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parameters & System Diagnostics Collapsible -->
+            <details class="diagnostics-card">
+                <summary class="diagnostics-summary">
+                    <span>⚙️ Advanced Inference Parameters & System Health</span>
+                    <span class="chevron">▼</span>
+                </summary>
+                <div class="diagnostics-content">
+                    <div class="param-grid">
+                        <div class="param-item">
+                            <label for="tempRange">Temperature: <span id="tempValue">0.1</span></label>
+                            <input type="range" id="tempRange" min="0.0" max="1.0" step="0.05" value="0.1">
+                        </div>
+                        <div class="param-item">
+                            <label for="maxTokensRange">Max Tokens: <span id="tokensValue">128</span></label>
+                            <input type="range" id="maxTokensRange" min="32" max="512" step="16" value="128">
+                        </div>
+                        <div class="param-item">
+                            <label for="repetitionPenalty">Repetition Penalty: <span id="repValue">1.1</span></label>
+                            <input type="range" id="repetitionPenalty" min="1.0" max="1.5" step="0.05" value="1.1">
+                        </div>
+                    </div>
+                    <div class="system-stats" id="systemStats">
+                        <div class="stat-pill">Backend: <strong>FastAPI + PyTorch</strong></div>
+                        <div class="stat-pill">Tunnel: <strong>Cloudflare Free Tunnel</strong></div>
+                        <div class="stat-pill">Hugging Face Repo: <strong>aykgeh/Ekegusii-LLM-Translation</strong></div>
+                        <div class="stat-pill">Quantization: <strong>4-bit NF4 (bitsandbytes)</strong></div>
+                    </div>
+                </div>
+            </details>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Ekegusii LLM Translation Project • Deployed via Google Colab & Cloudflare Tunnel • Model Repository: <a href="https://huggingface.co/aykgeh/Ekegusii-LLM-Translation" target="_blank" rel="noopener">aykgeh/Ekegusii-LLM-Translation</a></p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

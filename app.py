@@ -65,15 +65,38 @@ HF_REPO_ID = "aykgeh/Ekegusii-LLM-Translation"
 BASE_MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 
 MODEL_OPTIONS = {
-    "🏆 E10 Model B (English → Ekegusii via Swahili Pivot) [Winner]": "E10_Model_B_English_Ekegusii",
-    "🌍 E10 Model C (Swahili → Ekegusii via English Pivot)": "E10_Model_C_Swahili_Ekegusii",
-    "🔄 E10 Model A (English ↔ Swahili Base Pivot)": "E10_Model_A_English_Swahili",
-    "🔗 E9 Sequential Transfer (Swahili → Ekegusii)": "E9_Sequential_Transfer",
-    "📚 E5 Full Resources (Multilingual Trilingual)": "E5_Full_Resources",
-    "📖 E1 English-Ekegusii (Bilingual QLoRA)": "E1_English_Ekegusii",
+    "🏆 E10 Model B (English → Ekegusii via Swahili Pivot) [Winner]": "qwen/E10_Model_B_English_Ekegusii/checkpoint-8000",
+    "🌍 E10 Model C (Swahili → Ekegusii via English Pivot)": "qwen/E10_Model_C_Swahili_Ekegusii/checkpoint-6000",
+    "🔄 E10 Model A (English ↔ Swahili Base Pivot)": "qwen/E10_Model_A_English_Swahili/checkpoint-4500",
+    "🔗 E9 Sequential Transfer (Swahili → Ekegusii)": "qwen/E9_Sequential_Transfer/checkpoint-8000",
+    "📚 E5 Full Resources (Multilingual Trilingual)": "qwen/E5_Full_Resources/checkpoint-18000",
+    "📖 E1 English-Ekegusii (Bilingual QLoRA)": "qwen/E1_English_Ekegusii/checkpoint-8000",
     "⚡ E0 Zero-Shot Base Qwen2.5-7B": "E0_Zero_Shot",
     "🚀 Fast Offline Demo Mode (CPU / Presets Only)": "OFFLINE_DEMO"
 }
+
+CHECKPOINT_SUBMAP = {
+    "E10_Model_B_English_Ekegusii": "qwen/E10_Model_B_English_Ekegusii/checkpoint-8000",
+    "E10_Model_C_Swahili_Ekegusii": "qwen/E10_Model_C_Swahili_Ekegusii/checkpoint-6000",
+    "E10_Model_A_English_Swahili": "qwen/E10_Model_A_English_Swahili/checkpoint-4500",
+    "E9_Sequential_Transfer": "qwen/E9_Sequential_Transfer/checkpoint-8000",
+    "E7_Curriculum_Learning": "qwen/E7_Curriculum_Learning/checkpoint-18000",
+    "E6_Lexical_Augmentation": "qwen/E6_Lexical_Augmentation/checkpoint-7000",
+    "E5_Full_Resources": "qwen/E5_Full_Resources/checkpoint-18000",
+    "E4_Trilingual": "qwen/E4_Trilingual/checkpoint-15500",
+    "E3_Bilingual": "qwen/E3_Bilingual/checkpoint-13000",
+    "E2_Swahili_Ekegusii": "qwen/E2_Swahili_Ekegusii/checkpoint-6000",
+    "E1_English_Ekegusii": "qwen/E1_English_Ekegusii/checkpoint-8000",
+}
+
+def resolve_subfolder(key: str) -> str:
+    """Resolve model key or shorthand to exact HF Hub checkpoint path."""
+    if key in CHECKPOINT_SUBMAP:
+        return CHECKPOINT_SUBMAP[key]
+    for exp, full_path in CHECKPOINT_SUBMAP.items():
+        if exp in key:
+            return full_path
+    return key
 
 # ---------------------------------------------------------------------------
 # PRESET PSAs BY DOMAIN
@@ -166,7 +189,7 @@ def load_hf_model(model_key: str, hf_token: str = None):
                 torch_dtype=torch.bfloat16,
                 token=token_arg
             )
-            subfolder = f"qwen/{model_key}"
+            subfolder = resolve_subfolder(model_key)
             model = PeftModel.from_pretrained(base_model, HF_REPO_ID, subfolder=subfolder, token=token_arg)
 
         model.eval()
@@ -313,6 +336,8 @@ with tab3:
         fb_src = st.text_input("Source Text", value=input_text if 'input_text' in locals() else "")
         fb_output = st.text_input("Model Translation Output", value=output_text if 'output_text' in locals() else "")
         
+        psa_choice = st.selectbox("Resource Category (PSA / Non-PSA)", ["PSA", "Non-PSA"], index=0, help="Classify whether this submission is a Public Service Announcement (PSA) or general non-PSA text")
+
         c1, c2, c3 = st.columns(3)
         with c1:
             fluency = st.slider("Fluency (1 = Unnatural, 5 = Native)", 1, 5, 4)
@@ -332,6 +357,7 @@ with tab3:
                 "Model": selected_label,
                 "Source": fb_src,
                 "Translation": fb_output,
+                "PSA_non_PSA": psa_choice,
                 "Fluency": fluency,
                 "Adequacy": adequacy,
                 "Cultural": cultural,
